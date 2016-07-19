@@ -1,0 +1,19 @@
+###############################
+### Src and build locations ###
+###############################
+
+LIBDIR=/home/odysei/CERN/WorkingDir/KD/MEKD_dev_area/MEKD/lib
+
+LIBRECOC=ttbar_reco_C/lib
+
+INCDIR0=/home/odysei/CERN/WorkingDir/KD/MEKD_dev_area/MEKD/
+INCDIR1=/home/odysei/CERN/WorkingDir/KD/MEKD_dev_area/MEKD/interface
+INCDIR2=/home/odysei/CERN/WorkingDir/KD/MEKD_dev_area/MEKD/src
+INCDIR3=/home/odysei/CERN/WorkingDir/KD/MEKD_dev_area/MEKD/src/MG5_aMCNLO
+INCDIR4=ttbar_reco_C/include
+
+
+########## ROOT PART ##########
+ROOTLIB=$(ROOTSYS)/lib
+ROOTINCLUDES=$(ROOTSYS)/include
+###############################

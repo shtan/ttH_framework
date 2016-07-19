@@ -1,0 +1,15 @@
+#####################
+### Local objects ###
+#####################
+
+objects=src/LHEF_lite.o \
+        src/smearer.o \
+        src/identifier.o
+
+objects1=src/analyzers_1.o
+
+objects2=src/analyzers_2.o
+
+objects2p1=src/analyzers_1.o src/analyzers_2p1.o
+
+objects2p2=src/analyzers_1.o src/analyzers_2p2.o
