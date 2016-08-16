@@ -428,7 +428,7 @@ inline void Fill_bigstruct(const input &in, const parameters_ttRC &pa,
         nontop_phiwidths.push_back(p[1]);
     }
 
-    //Put in neutrinos as MET
+/*    //Put in neutrinos as MET
     double d12_px = Make_px( in.p.d12[0], in.p.d12[1] );
     double d12_py = Make_py( in.p.d12[0], in.p.d12[1] );
     double d22_px = Make_px( in.p.d22[0], in.p.d22[1] );
@@ -442,8 +442,12 @@ inline void Fill_bigstruct(const input &in, const parameters_ttRC &pa,
     if (in.p.t2_lep) {
         bigstruct.MET_px += d22_px;
         bigstruct.MET_py += d22_py;
-    }
+    }*/
 
+    //Put in MET
+    bigstruct.MET_px = in.p.MET_px;
+    bigstruct.MET_py = in.p.MET_py;
+    
     bigstruct.nontops_ptr = new nontop_system(
                                       nontop_pts, nontop_etas, nontop_phis, nontop_ms,
                                       nontop_ptwidths, nontop_etawidths, nontop_phiwidths);

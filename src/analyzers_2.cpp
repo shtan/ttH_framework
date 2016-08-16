@@ -72,29 +72,37 @@ inline void P4_resize(vector<double *> &p, const unsigned int sz)
 }
 
 inline void Fill_input_top(const pvec &t, bool &lepton, double b[4],
-                           double d1[4], double d2[4])
+                           double d1[4], double d2[4], double met_px, double met_py)
 {
     for (const auto id_p : t) {
         const auto &id = id_p.first;
         if (id == 5 || id == -5) {
             CartTXYZ_to_cyl(id_p.second, b);
+            met_px -= id_p.second[1];
+            met_py -= id_p.second[2];
             continue;
         }
         if (id == 11 || id == -11 || id == 13 || id == -13) {
             lepton = true;
             CartTXYZ_to_cyl(id_p.second, d1);
+            met_px -= id_p.second[1];
+            met_py -= id_p.second[2];
             continue;
         }
-        if (id == 12 || id == -12 || id == 14 || id == -14) {
+        /*if (id == 12 || id == -12 || id == 14 || id == -14) {
             CartTXYZ_to_cyl(id_p.second, d2);
             continue;
-        }
+        }*/
         if (id >= -4 && id <= 4 && id != 0) {
             if (d1[0] == 0) {    // check
                 CartTXYZ_to_cyl(id_p.second, d1);
+                met_px -= id_p.second[1];
+                met_py -= id_p.second[2];
                 continue;
             }
             CartTXYZ_to_cyl(id_p.second, d2);
+            met_px -= id_p.second[1];
+            met_py -= id_p.second[2];
             continue;
         }
     }
@@ -115,8 +123,12 @@ inline void Fill_input(const ttbarX &in, recoc::input_x<4> &out)
     out.d22[1] = 0;
     out.d22[2] = 0;
     out.d22[3] = 0;
-    Fill_input_top(in.p_t1, out.t1_lep, out.b1, out.d11, out.d12);
-    Fill_input_top(in.p_t2, out.t2_lep, out.b2, out.d21, out.d22);
+
+    double met_px = 0;
+    double met_py = 0;
+
+    Fill_input_top(in.p_t1, out.t1_lep, out.b1, out.d11, out.d12, met_px, met_py);
+    Fill_input_top(in.p_t2, out.t2_lep, out.b2, out.d21, out.d22, met_px, met_py);
     
     // link over stuff
     unsigned int sz;
@@ -131,17 +143,27 @@ inline void Fill_input(const ttbarX &in, recoc::input_x<4> &out)
         const auto &id = id_p.first;
         if (id == 5) {
             CartTXYZ_to_cyl(id_p.second, out.bH1);
+            met_px -= id_p.second[1];
+            met_py -= id_p.second[2];
             continue;
         }
         if (id == -5) {
             CartTXYZ_to_cyl(id_p.second, out.bH2);
+            met_px -= id_p.second[1];
+            met_py -= id_p.second[2];
             continue;
         }
         
         // "exotics" go in here
         CartTXYZ_to_cyl(id_p.second, *it1);
+        met_px -= id_p.second[1];
+        met_py -= id_p.second[2];
         ++it1;
     }
+
+    out.MET_px = met_px;
+    out.MET_py = met_py;
+
 }
 
 inline void Fill_SDs_(const double p[4], const double unc[3], double SD[3])

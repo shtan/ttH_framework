@@ -48,6 +48,9 @@ template <unsigned int sz> struct input_x {
     double bH2[sz];
 
     std::vector<double *> p_others;
+
+    double MET_px;
+    double MET_py;
 };
 
 struct input {
