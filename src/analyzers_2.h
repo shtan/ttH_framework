@@ -19,6 +19,7 @@ class analyzer2
     smearer smr;
     vector<pair<int, double *>> ps; // smeared particles
     ex1::identifier_GM ident;
+    recoc::input generated;
     recoc::input in_2_RC;
     recoc::parameters_ttRC params;
     recoc::ttRC reco_C;

@@ -72,11 +72,11 @@ struct top_system {
             const double Wd1_px = Wd1_vec.Px();
             const double Wd1_py = Wd1_vec.Py();
             const double Wd1_pz = Wd1_vec.Pz();
-            const double Wd1_pe = Wd1_vec.E();
+            const double Wd1_e = Wd1_vec.E();
             const double Wd2_px = Wd2_vec.Px();
             const double Wd2_py = Wd2_vec.Py();
             const double Wd2_pz = Wd2_vec.Pz();
-            const double Wd2_pe = Wd2_vec.E();
+            const double Wd2_e = Wd2_vec.E();
 
             //Calculate total px, py, pz of the top system for this top
             const double total_px = b_vec.Px() + Wd1_vec.Px() + Wd2_vec.Px();
@@ -823,6 +823,33 @@ inline double adder(top_system & cha){
     return bob.Px();
 }
 
+inline void check_met(big_struct & bigstruct){
+    double totalpx_orig = 0;
+    double totalpy_orig = 0;
+    for (auto top = bigstruct.tops.begin(); top != bigstruct.tops.end(); ++top){
+        totalpx_orig += (*top)->input.total_px;
+        totalpy_orig += (*top)->input.total_py;
+    }
+    cout << "total top input px = " << totalpx_orig << endl;
+    cout << "total top input py = " << totalpy_orig << endl;
+
+    double sum_nontop_px = 0;
+    double sum_nontop_py = 0;
+    for (int i = 0; i < bigstruct.nontops_ptr->input.n_objs; ++i){
+        sum_nontop_px += bigstruct.nontops_ptr->calc.jet_px_orig.at(i);
+        sum_nontop_py += bigstruct.nontops_ptr->calc.jet_py_orig.at(i);
+    }
+    cout << "total nontop input px = " << sum_nontop_px << endl;
+    cout << "total nontop input py = " << sum_nontop_py << endl;
+
+
+    cout << "input met px = " << bigstruct.MET_px << endl;
+    cout << "input met py = " << bigstruct.MET_py << endl;
+
+    return;
+}
+
+
 inline double recoil_px(big_struct & bigstruct){
     double totalpx = 0;
     for (auto top = bigstruct.tops.begin(); top != bigstruct.tops.end(); ++top){
@@ -878,6 +905,159 @@ inline double total_top_py(big_struct & bigstruct){
         totalpy += (*top)->calc.total_py();
     }
     return totalpy;
+}
+
+template<typename T> void pr1(T t){
+    cout << left << setw(12) << setfill(' ') << t;
+}
+
+template<typename T> void pr(T t1, T t2, T t3, T t4){
+    pr1(t1);
+    pr1(t2);
+    pr1(t3);
+    pr1(t4);
+    //pr1(t5);
+}
+
+inline void print_top_input(top_system & top){
+
+    //Input values
+    cout << endl;
+    cout << "Input values:" << endl << endl;
+
+    cout << "leptonic = " << top.input.leptonic << endl << endl;
+
+    //Polar coords
+    pr1(" ");
+    pr("pt", "phi", "eta", "mass");
+    cout << endl;
+
+    pr1("b-jet");
+    pr(top.input.b_pt, top.input.b_phi, top.input.b_eta, top.input.b_m);
+    cout << endl;
+
+    pr1("Wd1");
+    pr(top.input.Wd1_pt, top.input.Wd1_phi, top.input.Wd1_eta, top.input.Wd1_m);
+    cout << endl;
+
+    pr1("Wd2");
+    pr(top.input.Wd2_pt, top.input.Wd2_phi, top.input.Wd2_eta, top.input.Wd2_m);
+    cout << endl;
+
+    cout << endl;
+
+    //Cartesian coords
+    pr1(" ");
+    pr("px", "py", "pz", "energy");
+    cout << endl;
+
+    pr1("b-jet");
+    pr(top.input.b_px, top.input.b_py, top.input.b_pz, top.input.b_e);
+    cout << endl;
+
+    pr1("Wd1");
+    pr(top.input.Wd1_px, top.input.Wd1_py, top.input.Wd1_pz, top.input.Wd1_e);
+    cout << endl;
+
+    pr1("Wd2");
+    pr(top.input.Wd2_px, top.input.Wd2_py, top.input.Wd2_pz, top.input.Wd2_e);
+    cout << endl;
+
+    cout << endl;
+
+/*    cout << " " << "\tpt       " << "\t\tphi     " << "\t\teta     " << "\t\tmass     " << endl;
+    cout << "b-jet" << "\t" << top.input.b_pt << "\t\t" << top.input.b_phi
+         << "\t\t" << top.input.b_eta << "\t\t" << top.input.b_m << endl;
+*/
+    return;
+
+}
+
+inline void print_top_current(top_system & top){
+
+    //Input values
+    cout << endl;
+    cout << "Current values:" << endl << endl;
+
+    cout << "leptonic = " << top.input.leptonic << endl << endl;
+
+    //Polar coords
+    pr1(" ");
+    pr("pt", "phi", "eta", "input mass");
+    cout << endl;
+
+    pr1("b-jet");
+    pr(top.calc.b_pt(), top.calc.b_phi(), top.calc.b_eta(), top.input.b_m);
+    cout << endl;
+
+    pr1("Wd1");
+    pr(top.calc.Wd1_pt(), top.calc.Wd1_phi(), top.calc.Wd1_eta(), top.input.Wd1_m);
+    cout << endl;
+
+    pr1("Wd2");
+    pr(top.calc.Wd2_pt(), top.calc.Wd2_phi(), top.calc.Wd2_eta(), top.input.Wd2_m);
+    cout << endl;
+
+    cout << endl;
+
+    //Cartesian coords
+    pr1(" ");
+    pr("px", "py", "pz", "energy");
+    cout << endl;
+
+    pr1("b-jet");
+    pr(top.calc.b_px(), top.calc.b_py(), top.calc.b_pz(), top.calc.b_e());
+    cout << endl;
+
+    pr1("Wd1");
+    pr(top.calc.Wd1_px(), top.calc.Wd1_py(), top.calc.Wd1_pz(), top.calc.Wd1_e());
+    cout << endl;
+
+    pr1("Wd2");
+    pr(top.vars.Wd2_px, top.vars.Wd2_py, top.vars.Wd2_pz, top.calc.Wd2_e());
+    cout << endl;
+
+    cout << endl;
+
+    //Masses of parents
+    cout << "mW = " << top.calc.mW() << endl;
+    cout << "mTop = " << top.calc.mTop() << endl;
+    cout << endl;
+
+/*    cout << " " << "\tpt       " << "\t\tphi     " << "\t\teta     " << "\t\tmass     " << endl;
+    cout << "b-jet" << "\t" << top.input.b_pt << "\t\t" << top.input.b_phi
+         << "\t\t" << top.input.b_eta << "\t\t" << top.input.b_m << endl;
+*/
+    return;
+
+}
+
+inline void print_top_chi2s_current(top_system & top){
+
+    //Input values
+    cout << endl;
+    cout << "Current chi2 values:" << endl << endl;
+
+    cout << "leptonic = " << top.input.leptonic << endl << endl;
+
+    cout << "b chi2 = " << top.calc.b_chi2() << endl;
+    cout << "Wd1 chi2 = " << top.calc.Wd1_chi2() << endl;
+    cout << "Wd2 chi2 = " << top.calc.Wd2_chi2() << endl;
+    cout << "mW chi2 = " << top.calc.mW_chi2() << endl;
+    cout << "mTop chi2 = " << top.calc.mTop_chi2() << endl;
+
+    cout << endl;
+
+    return;
+
+}
+
+inline void print_top_all(top_system &top){
+    print_top_input(top);
+    print_top_current(top);
+    print_top_chi2s_current(top);
+
+    return;
 }
 
 /*inline double print_top(const top_system & top){

@@ -72,7 +72,7 @@ inline void P4_resize(vector<double *> &p, const unsigned int sz)
 }
 
 inline void Fill_input_top(const pvec &t, bool &lepton, double b[4],
-                           double d1[4], double d2[4], double met_px, double met_py)
+                           double d1[4], double d2[4], double &met_px, double &met_py)
 {
     for (const auto id_p : t) {
         const auto &id = id_p.first;
@@ -215,12 +215,22 @@ void analyzer2::analz(const pvec &p, const movec &moth_ID)
     ttbarX ttX_smr = ident.identify(ex1::ttH_SL_bx, ps, moth_ID);
     // ttX.Print_contents();
     
-    Fill_input(ttX, in_2_RC.p);
+    Fill_input(ttX, generated.p);
+    Fill_input(ttX_smr, in_2_RC.p);
+
     Fill_SDs(in_2_RC);
-//     recoc::Print(in_2_RC);
+cout <<"blah" << endl;
+    //recoc::Print(in_2_RC);
     recoc::output result = reco_C.reco(in_2_RC, params);
-//     recoc::Print(result);
-    recoc::Print_diff(result, in_2_RC);
+cout <<"blahh in_2_RC" << endl;
+    //recoc::Print(in_2_RC);
+cout << "result" << endl;
+     recoc::Print(result);
+    //recoc::Print_diff(result, in_2_RC);
+    cout << "DIFFERENCE BETWEEN SMEARED AND GEN" << endl;
+    recoc::Print_diff(in_2_RC, generated);
+    cout << "DIFFERENCE BETWEEN FITTED AND GEN" << endl;
+    recoc::Print_diff(result, generated);
     
     for (auto array : result.p.p_others)
         delete array;

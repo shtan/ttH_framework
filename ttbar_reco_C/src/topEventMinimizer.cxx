@@ -160,8 +160,8 @@ void topEventMinimizer::calcWDaughterEllipses()
 
 void topEventMinimizer::findStartingValues(int nPoints)
 {
-    if (debug_verbosity >= 2)
-        cout << "find Starting Values" << endl;
+    //if (debug_verbosity >= 2)
+        //cout << "find Starting Values" << endl;
     // cout << "Determining starting values for the ellipse angles and top mass
     // deltas" << endl;
 
@@ -308,9 +308,11 @@ void topEventMinimizer::minimizeNonTopChiSquare()
 {
     // cout << "Doing inner minimization" << endl;
 
-    if (debug_verbosity >= 2)
-        cout << "minimizeNonTopChiSquare" << endl;
+    //if (debug_verbosity >= 2)
+        //cout << "minimizeNonTopChiSquare" << endl;
 
+    //commonstruct::print_top( *(bigstruct.tops.at(0)) );
+    //commonstruct::check_met( bigstruct );
 
     // cout<<"before infunctor"<<endl;
     // Set up the functor
@@ -394,8 +396,8 @@ double topEventMinimizer::outerMinimizationOperator(const double *inputDeltas)
     // printTopConstituents();
     // reset the inner chi^2 minimum for this outer minimizer step
 
-    if (debug_verbosity >= 2)
-        cout << "outerMinimizationOperator" << endl;
+    //if (debug_verbosity >= 2)
+        //cout << "outerMinimizationOperator" << endl;
 
 
     reset_best_inner_chiSquares();
@@ -544,6 +546,14 @@ void topEventMinimizer::minimizeTotalChiSquare()
     bigstruct.outerMin_Edm = outerMin_->Edm();
 
     setBestValues();
+
+    cout << "THIS IS TOP 1" << endl;
+    commonstruct::print_top_all( *(bigstruct.tops.at(0)) );
+    cout << "THIS IS TOP 2" << endl;
+    commonstruct::print_top_all( *(bigstruct.tops.at(1)) );
+    commonstruct::check_met( bigstruct );
+ 
+
 }
 
 void topEventMinimizer::setBestValues()

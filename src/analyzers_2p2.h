@@ -4,6 +4,7 @@
 // #include "identifier.h"  // in "analyzers_1.h"
 // #include "MEKD.h"    // in "analyzers_1.h"
 #include "ttHReco/ttbar_reco_C.h"
+#include <fstream>
 
 using namespace std;
 
@@ -16,7 +17,7 @@ class analyzer2p2
     analyzer2p2();
     ~analyzer2p2();
 
-    void analz(const pvec &, const movec &);
+    void analz(const pvec &, const movec &, ofstream &);
     inline void eval_MEs_ttbb(const ttbarX &ttH, vector<double> &MEs);
 
     smearer smr;

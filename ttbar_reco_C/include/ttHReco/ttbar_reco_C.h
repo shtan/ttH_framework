@@ -34,4 +34,5 @@ class ttRC
 void Print(const input &);
 void Print(const output &);
 void Print_diff(const output &, const input &);
+void Print_diff(const input &, const input &);
 }

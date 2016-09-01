@@ -9,7 +9,7 @@ int main()
 {
     LHEF_lite reader("ttbb_h_bbbbdue.lhe");
     unsigned long neve = 0;
-    const unsigned long max_ev = 2;
+    const unsigned long max_ev = 10;
 
     vector<pair<int, double *>> p; // particles
     vector<pair<int, int>> moth_ID;

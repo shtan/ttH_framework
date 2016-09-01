@@ -116,6 +116,10 @@ void Print(const output &in)
 void Print_diff(const output &final, const input &initial)
 {
     output diff;
+
+    diff.p.t1_lep = initial.p.t1_lep;
+    diff.p.t2_lep = initial.p.t2_lep;
+
     for (unsigned int i = 0; i < 4; ++i) {
         diff.p.b1[i] = final.p.b1[i] - initial.p.b1[i];
         diff.p.d11[i] = final.p.d11[i] - initial.p.d11[i];
@@ -146,6 +150,53 @@ void Print_diff(const output &final, const input &initial)
     }
     
     Print_(diff);
+
+    cout << "MET pt = " << pow( ( pow(initial.p.MET_px,2) + pow(initial.p.MET_py,2) ), 0.5 ) << endl;
+    cout << "MET phi = " << atan2( initial.p.MET_py, initial.p.MET_px ) << endl;
+
+}
+
+void Print_diff(const input &final, const input &initial)
+{
+    output diff;
+
+    diff.p.t1_lep = initial.p.t1_lep;
+    diff.p.t2_lep = initial.p.t2_lep;
+
+    for (unsigned int i = 0; i < 4; ++i) {
+        diff.p.b1[i] = final.p.b1[i] - initial.p.b1[i];
+        diff.p.d11[i] = final.p.d11[i] - initial.p.d11[i];
+        diff.p.d12[i] = final.p.d12[i] - initial.p.d12[i];
+        
+        diff.p.b2[i] = final.p.b2[i] - initial.p.b2[i];
+        diff.p.d21[i] = final.p.d21[i] - initial.p.d21[i];
+        diff.p.d22[i] = final.p.d22[i] - initial.p.d22[i];
+        
+        diff.p.bH1[i] = final.p.bH1[i] - initial.p.bH1[i];
+        diff.p.bH2[i] = final.p.bH2[i] - initial.p.bH2[i];
+    }
+    
+    const auto sz = final.p.p_others.size();
+    if (sz > 0) {
+        diff.p.p_others.reserve(sz);
+        auto itf = final.p.p_others.begin();
+        auto iti = initial.p.p_others.begin();
+        
+        while (itf != final.p.p_others.end()) {
+            double *p = new double[4];
+            p[0] = (*itf)[0] - (*iti)[0];
+            p[1] = (*itf)[1] - (*iti)[1];
+            p[2] = (*itf)[2] - (*iti)[2];
+            p[3] = (*itf)[3] - (*iti)[3];
+            diff.p.p_others.push_back(p);
+        }
+    }
+    
+    Print_(diff);
+
+    cout << "MET pt = " << pow( ( pow(initial.p.MET_px,2) + pow(initial.p.MET_py,2) ), 0.5 ) << endl;
+    cout << "MET phi = " << atan2( initial.p.MET_py, initial.p.MET_px ) << endl;
+
 }
 
 // void Print_diff(const input &in, const output &res)
@@ -354,23 +405,23 @@ inline void Fill_bigstruct(const input &in, const parameters_ttRC &pa,
     if (in.p.t1_lep) {
         bigstruct.tops.push_back( new top_system(
                     1, in.p.b1[0], in.p.b1[2], in.p.b1[1],
-                    Make_mass(in.p.b1[0], in.p.b1[2], in.p.b1[1], in.p.b1[3]),
+                    Make_mass(in.p.b1[0], in.p.b1[1], in.p.b1[2], in.p.b1[3]),
                     in.SD.b1[0], in.SD.b1[2], in.SD.b1[1],
                     in.p.d11[0], in.p.d11[2], in.p.d11[1],
-                    Make_mass(in.p.d11[0], in.p.d11[2], in.p.d11[1], in.p.d11[3]),
+                    Make_mass(in.p.d11[0], in.p.d11[1], in.p.d11[2], in.p.d11[3]),
                     in.SD.d11[0], in.SD.d11[2], in.SD.d11[1],
                     pa.m_t, pa.SD_m_t, pa.m_W, pa.SD_m_W) );
     } else {
         bigstruct.tops.push_back( new top_system(
-                    1, in.p.b1[0], in.p.b1[2], in.p.b1[1],
-                    Make_mass(in.p.b1[0], in.p.b1[2], in.p.b1[1], in.p.b1[3]),
+                    0, in.p.b1[0], in.p.b1[2], in.p.b1[1],
+                    Make_mass(in.p.b1[0], in.p.b1[1], in.p.b1[2], in.p.b1[3]),
                     in.SD.b1[0], in.SD.b1[2], in.SD.b1[1],
                     in.p.d11[0], in.p.d11[2], in.p.d11[1],
-                    Make_mass(in.p.d11[0], in.p.d11[2], in.p.d11[1], in.p.d11[3]),
+                    Make_mass(in.p.d11[0], in.p.d11[1], in.p.d11[2], in.p.d11[3]),
                     in.SD.d11[0], in.SD.d11[2], in.SD.d11[1],
                     pa.m_t, pa.SD_m_t, pa.m_W, pa.SD_m_W,
                     in.p.d12[0], in.p.d12[2], in.p.d12[1],
-                    Make_mass(in.p.d12[0], in.p.d12[2], in.p.d12[1], in.p.d12[3]),
+                    Make_mass(in.p.d12[0], in.p.d12[1], in.p.d12[2], in.p.d12[3]),
                     in.SD.d12[0], in.SD.d12[2], in.SD.d12[1]) );
     }
 
@@ -378,23 +429,23 @@ inline void Fill_bigstruct(const input &in, const parameters_ttRC &pa,
     if (in.p.t2_lep) {
         bigstruct.tops.push_back( new top_system(
                     1, in.p.b2[0], in.p.b2[2], in.p.b2[1],
-                    Make_mass(in.p.b2[0], in.p.b2[2], in.p.b2[1], in.p.b2[3]),
+                    Make_mass(in.p.b2[0], in.p.b2[1], in.p.b2[2], in.p.b2[3]),
                     in.SD.b2[0], in.SD.b2[2], in.SD.b2[1],
                     in.p.d21[0], in.p.d21[2], in.p.d21[1],
-                    Make_mass(in.p.d21[0], in.p.d21[2], in.p.d21[1], in.p.d21[3]),
+                    Make_mass(in.p.d21[0], in.p.d21[1], in.p.d21[2], in.p.d21[3]),
                     in.SD.d21[0], in.SD.d21[2], in.SD.d21[1],
                     pa.m_t, pa.SD_m_t, pa.m_W, pa.SD_m_W) );
     } else {
         bigstruct.tops.push_back( new top_system(
-                    1, in.p.b2[0], in.p.b2[2], in.p.b2[1],
-                    Make_mass(in.p.b2[0], in.p.b2[2], in.p.b2[1], in.p.b2[3]),
+                    0, in.p.b2[0], in.p.b2[2], in.p.b2[1],
+                    Make_mass(in.p.b2[0], in.p.b2[1], in.p.b2[2], in.p.b2[3]),
                     in.SD.b2[0], in.SD.b2[2], in.SD.b2[1],
                     in.p.d21[0], in.p.d21[2], in.p.d21[1],
-                    Make_mass(in.p.d21[0], in.p.d21[2], in.p.d21[1], in.p.d21[3]),
+                    Make_mass(in.p.d21[0], in.p.d21[1], in.p.d21[2], in.p.d21[3]),
                     in.SD.d21[0], in.SD.d21[2], in.SD.d21[1],
                     pa.m_t, pa.SD_m_t, pa.m_W, pa.SD_m_W,
                     in.p.d22[0], in.p.d22[2], in.p.d22[1],
-                    Make_mass(in.p.d22[0], in.p.d22[2], in.p.d22[1], in.p.d22[3]),
+                    Make_mass(in.p.d22[0], in.p.d22[1], in.p.d22[2], in.p.d22[3]),
                     in.SD.d22[0], in.SD.d22[2], in.SD.d22[1]) );
     }
 
@@ -405,7 +456,7 @@ inline void Fill_bigstruct(const input &in, const parameters_ttRC &pa,
     nontop_pts.push_back(in.p.bH1[0]);
     nontop_etas.push_back(in.p.bH1[2]);
     nontop_phis.push_back(in.p.bH1[1]);
-    nontop_ms.push_back( Make_mass(in.p.bH1[0], in.p.bH1[2], in.p.bH1[1], in.p.bH1[3]) );
+    nontop_ms.push_back( Make_mass(in.p.bH1[0], in.p.bH1[1], in.p.bH1[2], in.p.bH1[3]) );
     nontop_ptwidths.push_back(in.SD.bH1[0]);
     nontop_etawidths.push_back(in.SD.bH1[2]);
     nontop_phiwidths.push_back(in.SD.bH1[1]);
@@ -413,7 +464,7 @@ inline void Fill_bigstruct(const input &in, const parameters_ttRC &pa,
     nontop_pts.push_back(in.p.bH2[0]);
     nontop_etas.push_back(in.p.bH2[2]);
     nontop_phis.push_back(in.p.bH2[1]);
-    nontop_ms.push_back( Make_mass(in.p.bH2[0], in.p.bH2[2], in.p.bH2[1], in.p.bH2[3]) );
+    nontop_ms.push_back( Make_mass(in.p.bH2[0], in.p.bH2[1], in.p.bH2[2], in.p.bH2[3]) );
     nontop_ptwidths.push_back(in.SD.bH2[0]);
     nontop_etawidths.push_back(in.SD.bH2[2]);
     nontop_phiwidths.push_back(in.SD.bH2[1]);
@@ -422,7 +473,7 @@ inline void Fill_bigstruct(const input &in, const parameters_ttRC &pa,
         nontop_pts.push_back(p[0]);
         nontop_etas.push_back(p[2]);
         nontop_phis.push_back(p[1]);
-        nontop_ms.push_back( Make_mass(p[0], p[2], p[1], p[3]) );
+        nontop_ms.push_back( Make_mass(p[0], p[1], p[2], p[3]) );
         nontop_ptwidths.push_back(p[0]);
         nontop_etawidths.push_back(p[2]);
         nontop_phiwidths.push_back(p[1]);
