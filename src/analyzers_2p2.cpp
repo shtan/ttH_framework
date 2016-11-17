@@ -141,7 +141,7 @@ inline void Fill_input_top(const pvec &t, bool &lepton, double b[4],
     }
 }
 
-inline void Fill_input(const ttbarX &in, recoc::input_x<4> &out)
+inline void Fill_input(const ttbarX &in, recoc::input_x<4> &out, recoc::input &outbig)
 {
     out.t1_lep = false;
     out.t2_lep = false;
@@ -194,8 +194,8 @@ inline void Fill_input(const ttbarX &in, recoc::input_x<4> &out)
         ++it1;
     }
 
-    out.MET_px = met_px;
-    out.MET_py = met_py;
+    outbig.MET_px = met_px;
+    outbig.MET_py = met_py;
 
 }
 
@@ -362,14 +362,18 @@ inline void Transform(const recoc::output &in, ttbarX &out)
     Cyl_to_cartTXYZ(in.p.bH2, out.p_X[1].second);
 }
 
-void analyzer2p2::analz(const pvec &p, const movec &moth_ID, ofstream &outfile)
+void analyzer2p2::analz(const pvec &p, const movec &moth_ID, ofstream &outfile,
+        ofstream &outfile_converged, ofstream &outfile_failed)
 {
     smr.smear(p, ps);
     ttbarX ttX = ident.identify(ex1::ttH_SL_bx, p, moth_ID);
-    // ttbarX ttX_smr = ident.identify(ex1::ttH_SL_bx, ps, moth_ID);
+    ttbarX ttX_smr = ident.identify(ex1::ttH_SL_bx, ps, moth_ID);
     // ttX.Print_contents();
     
-    Fill_input(ttX, in_2_RC.p);
+    Fill_input(ttX, generated.p, generated);
+    Fill_input(ttX_smr, in_2_RC.p, in_2_RC);
+
+    Fill_SDs(generated);
     Fill_SDs(in_2_RC);
     // recoc::Print(in_2_RC);
     recoc::output result = reco_C.reco(in_2_RC, params);
@@ -402,6 +406,21 @@ void analyzer2p2::analz(const pvec &p, const movec &moth_ID, ofstream &outfile)
          << d_ME_sig << " " << d_ME_bkg << " " << d_m_sys << " "
          << d_m_t1 << " " << d_m_t2 << " " << d_m_X
          << endl;
+
+    if ( (result.inner_min_status == 0 or result.inner_min_status == 1)
+           and (result.outer_min_status == 0 or result.outer_min_status == 1) ){
+        outfile_converged << "RESULT: ";
+        outfile_converged << lgME_org[0] << " " << lgME_org[1] << " "
+            << d_ME_sig << " " << d_ME_bkg << " " << d_m_sys << " "
+            << d_m_t1 << " " << d_m_t2 << " " << d_m_X
+            << endl;
+    } else {
+        outfile_failed << "RESULT: ";
+        outfile_failed << lgME_org[0] << " " << lgME_org[1] << " "
+            << d_ME_sig << " " << d_ME_bkg << " " << d_m_sys << " "
+            << d_m_t1 << " " << d_m_t2 << " " << d_m_X
+            << endl;
+    }
 
 
     

@@ -50,6 +50,10 @@ class topEventMinimizer
     int& debug_verbosity;
 
   public:
+
+    //commonstruct::big_struct & bigstruct;
+
+
     // flags
     const bool debug = true;
 
@@ -85,10 +89,19 @@ class topEventMinimizer
     TLorentzVector get_W(int);
     TLorentzVector get_top(int);
     TLorentzVector get_nontop_object(int);
+    TLorentzVector get_higgs();
+    double get_best_mW_chi2(int);
+    double get_best_mTop_chi2(int);
+    double get_best_b_chi2(int);
+    double get_best_Wd1_chi2(int);
+    double get_best_Wd2_chi2(int);
+    double get_best_nontop_chi2();
     double get_best_total_had_chi2();
     double get_best_total_mTop_chi2();
     double get_best_total_topsys_chi2();
     double get_best_total_chi2();
+    int get_inner_min_status();
+    int get_outer_min_status();
 
 
 

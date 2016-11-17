@@ -151,8 +151,8 @@ void Print_diff(const output &final, const input &initial)
     
     Print_(diff);
 
-    cout << "MET pt = " << pow( ( pow(initial.p.MET_px,2) + pow(initial.p.MET_py,2) ), 0.5 ) << endl;
-    cout << "MET phi = " << atan2( initial.p.MET_py, initial.p.MET_px ) << endl;
+    cout << "MET pt = " << pow( ( pow(initial.MET_px,2) + pow(initial.MET_py,2) ), 0.5 ) << endl;
+    cout << "MET phi = " << atan2( initial.MET_py, initial.MET_px ) << endl;
 
 }
 
@@ -194,8 +194,8 @@ void Print_diff(const input &final, const input &initial)
     
     Print_(diff);
 
-    cout << "MET pt = " << pow( ( pow(initial.p.MET_px,2) + pow(initial.p.MET_py,2) ), 0.5 ) << endl;
-    cout << "MET phi = " << atan2( initial.p.MET_py, initial.p.MET_px ) << endl;
+    cout << "MET pt = " << pow( ( pow(initial.MET_px,2) + pow(initial.MET_py,2) ), 0.5 ) << endl;
+    cout << "MET phi = " << atan2( initial.MET_py, initial.MET_px ) << endl;
 
 }
 
@@ -228,6 +228,16 @@ inline double Make_mass(const double &pT, const double &phi, const double &eta, 
     LV vec;
     vec.SetPtEtaPhiE(pT, eta, phi, energy);
     return vec.M();
+}
+
+inline double Make_pT(const double &px, const double &py)
+{
+    return pow( (pow(px,2) + pow(py,2)), 0.5 );
+}
+
+inline double Make_phi(const double &px, const double &py)
+{
+    return atan2(py, px);
 }
 
 inline void Eval_p_sum_tt_cartesian(const input_x<4> &inp, double outp[3])
@@ -496,8 +506,8 @@ inline void Fill_bigstruct(const input &in, const parameters_ttRC &pa,
     }*/
 
     //Put in MET
-    bigstruct.MET_px = in.p.MET_px;
-    bigstruct.MET_py = in.p.MET_py;
+    bigstruct.MET_px = in.MET_px;
+    bigstruct.MET_py = in.MET_py;
     
     bigstruct.nontops_ptr = new nontop_system(
                                       nontop_pts, nontop_etas, nontop_phis, nontop_ms,
@@ -511,6 +521,74 @@ inline void LV_to_cyl(const LV &in, double out[4])
     out[1] = in.Phi();
     out[2] = in.Eta();
     out[3] = in.E();
+}
+
+inline void cyl_to_LV(const double (&in)[4], LV &out)
+{
+    out.SetPtEtaPhiE( in[0], in[2], in[1], in[3] );
+}
+
+/*inline void input_to_output(const input &in, output &out)
+{
+    out.p = in.p;
+    daughter_to_parents(in.p, out.parents_p);
+}*/
+
+void ttRC::daughter_to_parents(const input_x<4> &daughters, parents<4> &prnts)
+{
+    LV t1, t2, w1, w2, b1, b2, d11, d12, d21, d22, bH1, bH2, h;
+
+    cyl_to_LV(daughters.b1, b1);
+    cyl_to_LV(daughters.d11, d11);
+    cyl_to_LV(daughters.d12, d12);
+    cyl_to_LV(daughters.b2, b2);
+    cyl_to_LV(daughters.d21, d21);
+    cyl_to_LV(daughters.d22, d22);
+    cyl_to_LV(daughters.bH1, bH1);
+    cyl_to_LV(daughters.bH2, bH2);
+
+    w1 = d11 + d12;
+/*    cout << "daughter d21 input Pt " << daughters.d21[0] << endl;
+    cout << "daughter d21 Pt " << d21.Pt() << endl;
+    cout <<"daughter w2 Pt " << w2.Pt() << endl;
+    cout << "daughter d21 Px " << d21.Px() << endl;
+    cout << "daughter d22 Px " << d22.Px() << endl;
+    cout <<"daughter w2 Px " << w2.Px() << endl;*/
+    t1 = b1 + d11 + d12;
+    w2 = d21 + d22;
+    t2 = b2 + d21 + d22;
+    h = bH1 + bH2;
+
+    cout << "daughter d11 input Pt " << daughters.d11[0] << endl;
+    //cout << "daughter d21 input Phi " << daughters.d21[1] << endl;
+    //cout << "daughter d21 input Eta " << daughters.d21[2] << endl;
+    //cout << "daughter d21 input E " << daughters.d21[3] << endl;
+    cout << "daughter d11 Pt " << d11.Pt() << endl;
+    cout <<"daughter w1 Pt " << w1.Pt() << endl;
+    cout << "daughter d11 Px " << d11.Px() << endl;
+    cout << "daughter d12 Px " << d12.Px() << endl;
+    cout <<"daughter w1 Px " << w1.Px() << endl;
+
+    LV_to_cyl(w1, prnts.w1);
+    LV_to_cyl(t1, prnts.t1);
+    LV_to_cyl(w2, prnts.w2);
+    LV_to_cyl(t2, prnts.t2);
+    LV_to_cyl(h, prnts.h);
+}
+
+void ttRC::input_to_output(const input &in, output &out)
+{
+    out.p = in.p;
+    daughter_to_parents(in.p, out.parents_p);
+}
+
+void ttRC::met_to_neutrino(const double &met_px, const double &met_py, double neu[4])
+{
+    LV neutrino;
+    double pt = Make_pT( met_px, met_py );
+    double phi = Make_phi( met_px, met_py );
+    neutrino.SetPtEtaPhiM( pt, 0, phi, 0 );
+    LV_to_cyl(neutrino, neu);
 }
 
 inline void Get_results(const input &in, big_struct &bigstruct, topEventMinimizer *ev, output &out)
@@ -530,6 +608,18 @@ inline void Get_results(const input &in, big_struct &bigstruct, topEventMinimize
         LV_to_cyl(b, out.p.b1);
         LV_to_cyl(d1, out.p.d11);
         LV_to_cyl(d2, out.p.d12);
+
+        const auto t = ev->get_top(0);
+        const auto w = ev->get_W(0);
+        LV_to_cyl(t, out.parents_p.t1);
+        LV_to_cyl(w, out.parents_p.w1);
+
+        out.chi2s.b1 = ev->get_best_b_chi2(0);
+        out.chi2s.d11 = ev->get_best_Wd1_chi2(0);
+        out.chi2s.d12 = ev->get_best_Wd2_chi2(0);
+        out.chi2s.mt1 = ev->get_best_mTop_chi2(0);
+        out.chi2s.mw1 = ev->get_best_mW_chi2(0);
+
     }
     // top 2
     {
@@ -541,12 +631,35 @@ inline void Get_results(const input &in, big_struct &bigstruct, topEventMinimize
         LV_to_cyl(b, out.p.b2);
         LV_to_cyl(d1, out.p.d21);
         LV_to_cyl(d2, out.p.d22);
+
+        const auto t = ev->get_top(1);
+        const auto w = ev->get_W(1);
+        LV_to_cyl(t, out.parents_p.t2);
+        LV_to_cyl(w, out.parents_p.w2);
+
+        out.chi2s.b2 = ev->get_best_b_chi2(1);
+        out.chi2s.d21 = ev->get_best_Wd1_chi2(1);
+        out.chi2s.d22 = ev->get_best_Wd2_chi2(1);
+        out.chi2s.mt2 = ev->get_best_mTop_chi2(1);
+        out.chi2s.mw2 = ev->get_best_mW_chi2(1);
+
     }
 
     const auto bH1 = ev->get_nontop_object(0);
     const auto bH2 = ev->get_nontop_object(1);
     LV_to_cyl(bH1, out.p.bH1);
     LV_to_cyl(bH2, out.p.bH2);
+
+    const auto h = ev->get_higgs();
+    LV_to_cyl(h, out.parents_p.h);
+
+    out.chi2s.nontop_objs = ev->get_best_nontop_chi2();
+
+    //out.inner_min_status = ev->bigstruct.innerMinStatus;
+    //out.outer_min_status = ev->bigstruct.outerMinStatus;
+
+    out.inner_min_status = ev->get_inner_min_status();
+    out.outer_min_status = ev->get_outer_min_status();
 
 }
 

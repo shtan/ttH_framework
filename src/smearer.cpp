@@ -56,6 +56,8 @@ void smearer::smear(const vector<pair<int, double *>> &p,
 inline void smearer::smear_(const resolution &res, const double *p,
                             const double m, double *op)
 {
+    const double mass = pow( ( pow(p[0],2) - pow(p[1],2) - pow(p[2],2) - pow(p[3],2) ), 0.5);
+
     const double pT = sqrt(p[1] * p[1] + p[2] * p[2]);
     const double eta = asinh(p[3] / pT);
     double phi = asin(p[2] / pT);
@@ -71,7 +73,8 @@ inline void smearer::smear_(const resolution &res, const double *p,
     const double py = sin(phi_n) * pT_n;
     const double pz = sinh(eta_n) * pT_n;
 
-    op[0] = sqrt(m * m + px * px + py * py + pz * pz);
+    //op[0] = sqrt(m * m + px * px + py * py + pz * pz);
+    op[0] = sqrt(mass * mass + px * px + py * py + pz * pz);
     op[1] = px;
     op[2] = py;
     op[3] = pz;

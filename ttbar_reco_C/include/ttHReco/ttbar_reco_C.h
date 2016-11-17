@@ -27,6 +27,10 @@ class ttRC
     // constructor
     ttRC();
 
+    void daughter_to_parents(const input_x<4> &, parents<4> &);
+    void input_to_output(const input&, output&);
+    void met_to_neutrino(const double &, const double &, double [4]);
+
   private:
     topEventMinimizer *rc;
 };

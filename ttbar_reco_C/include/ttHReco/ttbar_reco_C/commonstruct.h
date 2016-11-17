@@ -908,7 +908,7 @@ inline double total_top_py(big_struct & bigstruct){
 }
 
 template<typename T> void pr1(T t){
-    cout << left << setw(12) << setfill(' ') << t;
+    cout << left << setw(24) << setfill(' ') << t;
 }
 
 template<typename T> void pr(T t1, T t2, T t3, T t4){
@@ -1053,6 +1053,7 @@ inline void print_top_chi2s_current(top_system & top){
 }
 
 inline void print_top_all(top_system &top){
+    cout << setprecision(10) << " " << endl;
     print_top_input(top);
     print_top_current(top);
     print_top_chi2s_current(top);

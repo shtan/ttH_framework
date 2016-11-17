@@ -17,7 +17,7 @@ class analyzer2p2
     analyzer2p2();
     ~analyzer2p2();
 
-    void analz(const pvec &, const movec &, ofstream &);
+    void analz(const pvec &, const movec &, ofstream &, ofstream &, ofstream &);
     inline void eval_MEs_ttbb(const ttbarX &ttH, vector<double> &MEs);
 
     smearer smr;
@@ -31,6 +31,7 @@ class analyzer2p2
     vector<double *> event_p;
     vector<double> MEs;
     ttbarX temp;
+    recoc::input generated;
     recoc::input in_2_RC;
     recoc::parameters_ttRC params;
     recoc::ttRC reco_C;
