@@ -5,6 +5,7 @@
 #include <TH1D.h>
 #include <TGraph.h>
 #include <TCanvas.h>
+#include <TPDF.h>
 
 using namespace commonstruct;
 
@@ -333,10 +334,10 @@ void topEventMinimizer::minimizeNonTopChiSquare()
 
     double step_theta = 0.02 * 3.14159265359;
     double step_mTop = 0.1;
-    const double max = 0.1;
+    //const double max = 0.1;
 
-    //double step_theta = 0.005 * 3.14159265359;
-    //double step_mTop = 0.02;
+    //double step_theta = 0.1 * 3.14159265359;
+    //double step_mTop = 0.5;
 
     int iPar = 0;
     for (int iTop = 0; iTop < bigstruct.n_tops(); iTop++) {
@@ -344,10 +345,10 @@ void topEventMinimizer::minimizeNonTopChiSquare()
         // ellipse angle
         TString parName = "theta_";
         parName += iTop;
-        //innerMin_->SetVariable(iPar, string(parName), bigstruct.tops.at(iTop)->best_inner_params.theta,
-        //                       step_theta);
-        innerMin_->SetLimitedVariable(iPar, string(parName), bigstruct.tops.at(iTop)->best_inner_params.theta,
-                               step_theta, -max, max);
+        innerMin_->SetVariable(iPar, string(parName), bigstruct.tops.at(iTop)->best_inner_params.theta,
+                               step_theta);
+        //innerMin_->SetLimitedVariable(iPar, string(parName), bigstruct.tops.at(iTop)->best_inner_params.theta,
+        //                       step_theta, -max, max);
 
         iPar += 1;
 
@@ -363,9 +364,10 @@ void topEventMinimizer::minimizeNonTopChiSquare()
         deltaMTopRangeLow = -30.;
         deltaMTopRangeHigh = 30.;
 
-        hasHighEdge = 1;
-        deltaMTopRangeLow = -0.1;
-        deltaMTopRangeHigh = 0.1;
+        //hasHighEdge = 1;
+        //deltaMTopRangeLow = -0.1;
+        //deltaMTopRangeHigh = 0.1;
+
 
         //(topSysChiSqs_.at(iTop))
         //    ->getTopMassDeltaRange(hasHighEdge, deltaMTopRangeLow,
@@ -374,7 +376,15 @@ void topEventMinimizer::minimizeNonTopChiSquare()
         //    min(deltaMTopRangeHigh, maxConsideredChiSquareRoot_);
         parName = "deltaMTop_";
         parName += iTop;
-        if (hasHighEdge) {
+
+        //Test giving it no limits
+        innerMin_->SetVariable(
+            iPar, string(parName), bigstruct.tops.at(iTop)->best_inner_params.delta_mTop, step_mTop);
+
+        
+        
+        
+/*        if (hasHighEdge) {
             // cout << "Current top mass delta is " << topMassDeltas_.at(iTop)
             // << endl;
             // cout << "deltaMTop range is " << deltaMTopRangeLow << " to " <<
@@ -389,15 +399,15 @@ void topEventMinimizer::minimizeNonTopChiSquare()
             // cout << "Current top mass delta is " << topMassDeltas_.at(iTop)
             // << endl;
             // cout << "deltaMTop lower edge is "<< deltaMTopRangeLow << endl;
-            //innerMin_->SetLowerLimitedVariable(iPar, string(parName),
-            //                                   bigstruct.tops.at(iTop)->best_inner_params.delta_mTop, step_mTop,
-            //                                   deltaMTopRangeLow);
-            innerMin_->SetLimitedVariable(iPar, string(parName),
+            innerMin_->SetLowerLimitedVariable(iPar, string(parName),
                                                bigstruct.tops.at(iTop)->best_inner_params.delta_mTop, step_mTop,
-                                               deltaMTopRangeLow, deltaMTopRangeHigh);
+                                               deltaMTopRangeLow);
+            //innerMin_->SetLimitedVariable(iPar, string(parName),
+            //                                   bigstruct.tops.at(iTop)->best_inner_params.delta_mTop, step_mTop,
+            //                                   deltaMTopRangeLow, deltaMTopRangeHigh);
             //cout << "HAS NO HIGH EDGE" << endl;
             //cout << "low = " << deltaMTopRangeLow << endl;
-        }
+        }*/
         iPar += 1;
     }
 
@@ -513,18 +523,18 @@ void topEventMinimizer::minimizeTotalChiSquare()
     double step_Wd1Eta = 0.1;
     double step_mW = 0.1;
 
-/*    double step_bPt = 0.02;
-    double step_bPhi = 0.02;
-    double step_bEta = 0.02;
-    double step_Wd1Pt = 0.02;
-    double step_Wd1Phi = 0.02;
-    double step_Wd1Eta = 0.02;
-    double step_mW = 0.02;*/
+/*    double step_bPt = 0.5;
+    double step_bPhi = 0.5;
+    double step_bEta = 0.5;
+    double step_Wd1Pt = 0.5;
+    double step_Wd1Phi = 0.5;
+    double step_Wd1Eta = 0.5;
+    double step_mW = 0.5;*/
 
     int iPar = 0, iTop = 0;
     const double max = maxConsideredChiSquareRoot_;
     //const double max = 0.001;
-    for (auto it = topSysChiSqs_.begin();
+/*    for (auto it = topSysChiSqs_.begin();
          it != topSysChiSqs_.end(); ++it, ++iTop) {
         ostringstream convert; // stream used for the (int) conversion
         convert << iTop;
@@ -557,15 +567,97 @@ void topEventMinimizer::minimizeTotalChiSquare()
         outerMin_->SetLimitedVariable(iPar, par7, bigstruct.tops.at(iTop)->vars.delta_mW, step_mW,
                                       -max, max);
         ++iPar;
+    }*/
+
+    for (auto it = topSysChiSqs_.begin();
+         it != topSysChiSqs_.end(); ++it, ++iTop) {
+        ostringstream convert; // stream used for the (int) conversion
+        convert << iTop;
+        const string iTop_str = convert.str();
+        const string par1 = "bJetPtDelta_" + iTop_str;
+        outerMin_->SetVariable(iPar, par1, bigstruct.tops.at(iTop)->vars.b_delta_pt, step_bPt);
+        ++iPar;
+        const string par2 = "bJetPhiDelta_" + iTop_str;
+        outerMin_->SetVariable(iPar, par2, bigstruct.tops.at(iTop)->vars.b_delta_phi,
+                                      step_bPhi);
+        ++iPar;
+        const string par3 = "bJetEtaDelta_" + iTop_str;
+        outerMin_->SetVariable(iPar, par3, bigstruct.tops.at(iTop)->vars.b_delta_eta,
+                                      step_bEta);
+        ++iPar;
+        const string par4 = "WDaughter1PtDelta_" + iTop_str;
+        outerMin_->SetVariable(
+            iPar, par4, bigstruct.tops.at(iTop)->vars.Wd1_delta_pt, step_Wd1Pt);
+        ++iPar;
+        const string par5 = "WDaughter1PhiDelta_" + iTop_str;
+        outerMin_->SetVariable(
+            iPar, par5, bigstruct.tops.at(iTop)->vars.Wd1_delta_phi, step_Wd1Phi);
+        ++iPar;
+        const string par6 = "WDaughter1EtaDelta_" + iTop_str;
+        outerMin_->SetVariable(
+            iPar, par6, bigstruct.tops.at(iTop)->vars.Wd1_delta_eta, step_Wd1Eta);
+        ++iPar;
+        const string par7 = "deltaMW_" + iTop_str;
+        outerMin_->SetVariable(iPar, par7, bigstruct.tops.at(iTop)->vars.delta_mW, step_mW
+                                      );
+        ++iPar;
     }
 
     // std::cout<<"before minimize"<<std::endl;
     // cout << "Starting outer minimization" << endl;
+
+    //Fix top masses
+    innerMin_->FixVariable(1);
+    innerMin_->FixVariable(3);
+
+/*    //Fix top 1
+    innerMin_->FixVariable(0);
+    innerMin_->FixVariable(1);
+    outerMin_->FixVariable(0);
+    outerMin_->FixVariable(1);
+    outerMin_->FixVariable(2);
+    outerMin_->FixVariable(3);
+    outerMin_->FixVariable(4);
+    outerMin_->FixVariable(5);
+    outerMin_->FixVariable(6);*/
+
+/*    //Fix top 2
+    innerMin_->FixVariable(2);
+    innerMin_->FixVariable(3);
+    outerMin_->FixVariable(7);
+    outerMin_->FixVariable(8);
+    outerMin_->FixVariable(9);
+    outerMin_->FixVariable(10);
+    outerMin_->FixVariable(11);
+    outerMin_->FixVariable(12);
+    outerMin_->FixVariable(13);*/
+
+    
     outerMin_->Minimize();
+
+    double* x;
+    double* y;
+    unsigned int n = 400;
+    cout << "before scan" << endl;
+    //outerMin_->Scan(6, n, x, y, 60, 100);
+/*
+    cout << "after scan" << endl;
+    TCanvas* canvas = new TCanvas("canvas");
+    TGraph *g = new TGraph(400,x,y);
+
+    cout << "after tgraph" << endl;
+    g->Draw("ap");
+    cout << "after draw" << endl;
+    canvas->Print("plotplot.pdf");*/
+
+    //innerMin_->ReleaseVariable(1);
+    //innerMin_->ReleaseVariable(3);
+    
+    //outerMin_->Minimize();
 
     // std::cout<<"after minimise"<<std::endl;
 
-    // cout << "Printing outer min results" << endl;
+     cout << "Printing outer min results" << endl;
     outerMin_->SetPrintLevel(1);
     outerMin_->PrintResults();
     cout << "Outer min status is " << outerMin_->Status() << endl;

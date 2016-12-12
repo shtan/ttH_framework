@@ -230,9 +230,15 @@ void Fill_SDs(recoc::input &in)
     }
 }
 
-void analyzer2::analz(const pvec &p, const movec &moth_ID, fmap2 &outfiles_best_gen_all, fmap2 &outfiles_smeared_gen_all,
+void analyzer2::analz(const pvec &p, const movec &moth_ID, long unsigned int &event_num, fmap2 &outfiles_best_gen_all, fmap2 &outfiles_smeared_gen_all,
                         fmap2 &outfiles_best_gen_converged, fmap2 &outfiles_smeared_gen_converged,
-                        fmap2 &outfiles_best_gen_failed, fmap2 &outfiles_smeared_gen_failed )
+                        fmap2 &outfiles_best_gen_failed, fmap2 &outfiles_smeared_gen_failed,
+                        fmap2 &outfiles_best_all, fmap2 &outfiles_smeared_all, fmap2 &outfiles_gen_all,
+                        ofstream &outfile_inner_status_all, ofstream &outfile_outer_status_all, ofstream &outfile_event_number_all,
+                        fmap2 &outfiles_best_converged, fmap2 &outfiles_smeared_converged, fmap2 &outfiles_gen_converged,
+                        ofstream &outfile_inner_status_converged, ofstream &outfile_outer_status_converged, ofstream &outfile_event_number_converged,
+                        fmap2 &outfiles_best_failed, fmap2 &outfiles_smeared_failed, fmap2 &outfiles_gen_failed,
+                        ofstream &outfile_inner_status_failed, ofstream &outfile_outer_status_failed, ofstream &outfile_event_number_failed )
 {
     smr.smear(p, ps);
     ttbarX ttX = ident.identify(ex1::ttH_SL_bx, p, moth_ID);
@@ -300,17 +306,42 @@ cout << "result" << endl;
     cout << "in2rc - genforcompare" << endl;
     calc_diff(in_2_RC_forcompare, genforcompare, smeared_gen);
 
+    dmap2_converter(result, best);
+    dmap2_converter(in_2_RC_forcompare, smeared);
+    dmap2_converter(genforcompare, gen);
+
     write_diff(best_gen, outfiles_best_gen_all);
     write_diff(smeared_gen, outfiles_smeared_gen_all);
+    
+    write_diff(best, outfiles_best_all);
+    write_diff(smeared, outfiles_smeared_all);
+    write_diff(gen, outfiles_gen_all);
+    write_int(result.inner_min_status, outfile_inner_status_all);
+    write_int(result.outer_min_status, outfile_outer_status_all);
+    write_int(event_num, outfile_event_number_all);
 
     if ( (result.inner_min_status == 0 or result.inner_min_status == 1)
       and (result.outer_min_status == 0 or result.outer_min_status == 1) ){
         write_diff(best_gen, outfiles_best_gen_converged);
         write_diff(smeared_gen, outfiles_smeared_gen_converged);
+        write_diff(best, outfiles_best_converged);
+        write_diff(smeared, outfiles_smeared_converged);
+        write_diff(gen, outfiles_gen_converged);
+        write_int(result.inner_min_status, outfile_inner_status_converged);
+        write_int(result.outer_min_status, outfile_outer_status_converged);
+        write_int(event_num, outfile_event_number_converged);
     } else {
         write_diff(best_gen, outfiles_best_gen_failed);
         write_diff(smeared_gen, outfiles_smeared_gen_failed);
+        write_diff(best, outfiles_best_failed);
+        write_diff(smeared, outfiles_smeared_failed);
+        write_diff(gen, outfiles_gen_failed);
+        write_int(result.inner_min_status, outfile_inner_status_failed);
+        write_int(result.outer_min_status, outfile_outer_status_failed);
+        write_int(event_num, outfile_event_number_failed);
     }
+
+    
 
 
     for (auto array : result.p.p_others)
@@ -322,6 +353,8 @@ cout << "result" << endl;
     out.p = in.p;
     recoc::daughter_to_parents(in.p, out.parents_p);
 }*/
+
+
 
 void analyzer2::calc_diff(const recoc::output &out1, const recoc::output &out2, dmap2 &diff)
 {
@@ -343,6 +376,27 @@ void analyzer2::calc_diff(const recoc::output &out1, const recoc::output &out2, 
     one_diff( out1.parents_p.h, out2.parents_p.h, diff, "Higgs" );
 }
 
+void analyzer2::dmap2_converter(const recoc::output &out, dmap2 &dmapp)
+{
+    //Top1
+    single_converter( out.p.b1, dmapp, "Bottom_1" );
+    single_converter( out.p.d11, dmapp, "Wd11" );
+    single_converter( out.p.d12, dmapp, "Wd12" );
+    single_converter( out.parents_p.w1, dmapp, "W1" );
+    single_converter( out.parents_p.t1, dmapp, "Top_1" );
+    //Top 2
+    single_converter( out.p.b2, dmapp, "Bottom_2" );
+    single_converter( out.p.d21, dmapp, "Wd21" );
+    single_converter( out.p.d22, dmapp, "Wd22" );
+    single_converter( out.parents_p.w2, dmapp, "W2" );
+    single_converter( out.parents_p.t2, dmapp, "Top_2" );
+    //Higgs
+    single_converter( out.p.bH1, dmapp, "b1_from_H" );
+    single_converter( out.p.bH2, dmapp, "b2_from_H" );
+    single_converter( out.parents_p.h, dmapp, "Higgs" );
+}
+
+
 void analyzer2::principal_angle(double &theta)
 {
     cout << "theta = " << theta << endl;
@@ -354,6 +408,25 @@ void analyzer2::principal_angle(double &theta)
         theta += 2*pii;
     }
     cout << "new theta = " << theta << endl;
+}
+
+void analyzer2::single_converter(const double vec[4], dmap2 &dmapp, string partname)
+{
+    dmapp[partname]["Pt"] = vec[0];
+
+    double phi = vec[1];
+    double eta = vec[2];
+    principal_angle(phi);
+    principal_angle(eta);
+
+    dmapp[partname]["Phi"] = phi;
+    dmapp[partname]["Eta"] = eta;
+
+    TLorentzVector lv;
+    lv.SetPtEtaPhiE(vec[0], vec[2], vec[1], vec[3]);
+
+    dmapp[partname]["Mass"] = lv.M();
+
 }
 
 void analyzer2::one_diff(const double vec1[4], const double vec2[4], dmap2 &diff, string partname)
@@ -401,6 +474,16 @@ void analyzer2::write_diff(dmap2 &diff, fmap2 &outfiles)
         }
     }
 
+}
+
+void analyzer2::write_int(int &num, ofstream &outfile)
+{
+    outfile << num << endl;
+}
+
+void analyzer2::write_int(long unsigned int &num, ofstream &outfile)
+{
+    outfile << num << endl;
 }
 
 }
