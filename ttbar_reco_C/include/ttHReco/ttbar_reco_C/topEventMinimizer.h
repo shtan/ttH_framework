@@ -102,8 +102,9 @@ class topEventMinimizer
     double get_best_total_chi2();
     int get_inner_min_status();
     int get_outer_min_status();
-
-
+    double get_inner_edm();
+    double get_outer_edm();
+    void plot_chis();
 
 
 

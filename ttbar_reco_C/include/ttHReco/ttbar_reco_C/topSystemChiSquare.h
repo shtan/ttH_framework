@@ -31,7 +31,7 @@ class topSystemChiSquare
     commonstruct::top_system &topsys;
     // public:
 
-    bool rangeFlag_;
+    bool rangeFlag_ = false;
 
     //moved to public
     WDaughterEllipseCalculator WDaughter2Calc_;
@@ -56,6 +56,7 @@ class topSystemChiSquare
 
     bool hasTopMassRange() { return rangeFlag_; };
 
+    bool findTopMassRange();
     void calcTopMassRange();
 
 

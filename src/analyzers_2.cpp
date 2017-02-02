@@ -235,10 +235,13 @@ void analyzer2::analz(const pvec &p, const movec &moth_ID, long unsigned int &ev
                         fmap2 &outfiles_best_gen_failed, fmap2 &outfiles_smeared_gen_failed,
                         fmap2 &outfiles_best_all, fmap2 &outfiles_smeared_all, fmap2 &outfiles_gen_all,
                         ofstream &outfile_inner_status_all, ofstream &outfile_outer_status_all, ofstream &outfile_event_number_all,
+                        ofstream &outfile_inner_edm_all, ofstream &outfile_outer_edm_all,
                         fmap2 &outfiles_best_converged, fmap2 &outfiles_smeared_converged, fmap2 &outfiles_gen_converged,
                         ofstream &outfile_inner_status_converged, ofstream &outfile_outer_status_converged, ofstream &outfile_event_number_converged,
+                        ofstream &outfile_inner_edm_converged, ofstream &outfile_outer_edm_converged,
                         fmap2 &outfiles_best_failed, fmap2 &outfiles_smeared_failed, fmap2 &outfiles_gen_failed,
-                        ofstream &outfile_inner_status_failed, ofstream &outfile_outer_status_failed, ofstream &outfile_event_number_failed )
+                        ofstream &outfile_inner_status_failed, ofstream &outfile_outer_status_failed, ofstream &outfile_event_number_failed,
+                        ofstream &outfile_inner_edm_failed, ofstream &outfile_outer_edm_failed)
 {
     smr.smear(p, ps);
     ttbarX ttX = ident.identify(ex1::ttH_SL_bx, p, moth_ID);
@@ -254,6 +257,7 @@ void analyzer2::analz(const pvec &p, const movec &moth_ID, long unsigned int &ev
     
     Fill_input(ttX, generated.p, generated);
     Fill_input(ttX_smr, in_2_RC.p, in_2_RC);
+    //Fill_input(ttX, in_2_RC.p, in_2_RC);
 
     Fill_SDs(generated);
     Fill_SDs(in_2_RC);
@@ -318,6 +322,8 @@ cout << "result" << endl;
     write_diff(gen, outfiles_gen_all);
     write_int(result.inner_min_status, outfile_inner_status_all);
     write_int(result.outer_min_status, outfile_outer_status_all);
+    write_int(result.inner_edm, outfile_inner_edm_all);
+    write_int(result.outer_edm, outfile_outer_edm_all);
     write_int(event_num, outfile_event_number_all);
 
     if ( (result.inner_min_status == 0 or result.inner_min_status == 1)
@@ -329,6 +335,8 @@ cout << "result" << endl;
         write_diff(gen, outfiles_gen_converged);
         write_int(result.inner_min_status, outfile_inner_status_converged);
         write_int(result.outer_min_status, outfile_outer_status_converged);
+        write_int(result.inner_edm, outfile_inner_edm_converged);
+        write_int(result.outer_edm, outfile_outer_edm_converged);
         write_int(event_num, outfile_event_number_converged);
     } else {
         write_diff(best_gen, outfiles_best_gen_failed);
@@ -338,6 +346,8 @@ cout << "result" << endl;
         write_diff(gen, outfiles_gen_failed);
         write_int(result.inner_min_status, outfile_inner_status_failed);
         write_int(result.outer_min_status, outfile_outer_status_failed);
+        write_int(result.inner_edm, outfile_inner_edm_failed);
+        write_int(result.outer_edm, outfile_outer_edm_failed);
         write_int(event_num, outfile_event_number_failed);
     }
 
@@ -425,7 +435,8 @@ void analyzer2::single_converter(const double vec[4], dmap2 &dmapp, string partn
     TLorentzVector lv;
     lv.SetPtEtaPhiE(vec[0], vec[2], vec[1], vec[3]);
 
-    dmapp[partname]["Mass"] = lv.M();
+    dmapp[partname]["M"] = lv.M();
+    cout << "blub " << partname << " " << lv.M() << endl;
 
 }
 
@@ -449,7 +460,7 @@ void analyzer2::one_diff(const double vec1[4], const double vec2[4], dmap2 &diff
     TLorentzVector lv2;
     lv2.SetPtEtaPhiE(vec2[0], vec2[2], vec2[1], vec2[3]);
 
-    diff[partname]["Mass"] = lv1.M() - lv2.M();
+    diff[partname]["M"] = lv1.M() - lv2.M();
 
     cout << "partname = " << partname << endl;
     cout << "Pt " << vec1[0] << " " << vec2[0] << endl;
@@ -482,6 +493,11 @@ void analyzer2::write_int(int &num, ofstream &outfile)
 }
 
 void analyzer2::write_int(long unsigned int &num, ofstream &outfile)
+{
+    outfile << num << endl;
+}
+
+void analyzer2::write_int(double &num, ofstream &outfile)
 {
     outfile << num << endl;
 }

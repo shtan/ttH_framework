@@ -44,7 +44,7 @@ void topSystemChiSquare::setupWDaughter2EllipsePart2()
 void topSystemChiSquare::calcWDaughter2Ellipse()
 {
     // cout << "Calculating topmassrange" <<endl;
-    calcTopMassRange();
+    //calcTopMassRange();
     // cout << "Calculating the ellipse in homogenous representation" << endl;
     WDaughter2Calc_.calcWDaughterEllipse();
     // cout << "Calculating the ellipse in extended representation" << endl;
@@ -71,18 +71,49 @@ TMatrixD *topSystemChiSquare::getHomogeneousWDaughterEllipse()
     return WDaughter2Calc_.getHomogeneousWDaughterEllipse();
 }
 
+bool topSystemChiSquare::findTopMassRange()
+{
+    double step = 0.1;
+    double maxChiSq = 30.;
+    bool first = true;
+    double highest_delta_so_far = -99999.;
+    for (int iStep = int(-maxChiSq/step); iStep < int(maxChiSq/step); ++iStep){
+        topsys.vars.delta_mTop = step*iStep;
+        double z2 = getZ2();
+        //cout << iStep*step << " z2 = " << z2 << endl;
+        if (z2 < 0) continue;
+        else if (z2 > 0){
+            //If this is the first z2 that is greater than 0
+            if (first){
+                topsys.vars.delta_mTop_range_low = step*iStep;
+                first = false;
+            }
+            if (highest_delta_so_far < step*iStep) {
+                highest_delta_so_far = step*iStep;
+            }
+        }
+    }
+    topsys.vars.delta_mTop_range_high = highest_delta_so_far;
+
+    //If it never found a value of top mass for which Z2 is positive, return false.
+    if (first) return false;
+    else return true;
+
+}
+
 void topSystemChiSquare::calcTopMassRange()
 {
     // Find the ranges of squared top mass values in which Z^2 is positive:
     // Z^2=0 is a polynomial equation of degree 2 in mTop^2
 
+    cout << "Begin calcTopMassRange" << endl;
     // First check whether the calculation has been done
     //double currentZ2 = getZ2(topsys.input.mTop_central + topsys.input.mTop_width * topsys.vars.delta_mTop,
     //                         topsys.input.mW_central + topsys.input.mW_width * topsys.vars.delta_mW, topsys.input.Wd2_m);
     double currentZ2 = getZ2();
 
     if (rangeFlag_ && currentZ2 > 0.) {
-        // cout << "Top mass range already calculated" << endl;
+         cout << "Top mass range already calculated" << endl;
         return;
     }
 
@@ -413,6 +444,7 @@ void topSystemChiSquare::calcTopMassRange()
         // angle to starting value" << endl;
 
         // cout << "Current ellipse angle is " << tempTheta << endl;
+        cout << "End calcTopMassRange" << endl;
     }
 }
 

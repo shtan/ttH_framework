@@ -660,6 +660,8 @@ inline void Get_results(const input &in, big_struct &bigstruct, topEventMinimize
 
     out.inner_min_status = ev->get_inner_min_status();
     out.outer_min_status = ev->get_outer_min_status();
+    out.inner_edm = ev->get_inner_edm();
+    out.outer_edm = ev->get_outer_edm();
 
 }
 

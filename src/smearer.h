@@ -28,5 +28,7 @@ class smearer
   private:
     inline void smear_(const resolution &res, const double *p, const double m,
                        double *);
+    inline void smear_givemass_(const resolution &res, const double *p, const double m,
+                       double *);
     inline void resize(vector<pair<int, double *>> &p, const unsigned int sz);
 };

@@ -21,9 +21,9 @@ class analyzer2
 
     //void analz(const pvec &, const movec &, ofstream &);
     void analz(const pvec &, const movec &, long unsigned int &, fmap2 &, fmap2 &, fmap2 &, fmap2 &, fmap2 &, fmap2 &,
-                fmap2&, fmap2&, fmap2&, ofstream&, ofstream&, ofstream&,
-                fmap2&, fmap2&, fmap2&, ofstream&, ofstream&, ofstream&,
-                fmap2&, fmap2&, fmap2&, ofstream&, ofstream&, ofstream&
+                fmap2&, fmap2&, fmap2&, ofstream&, ofstream&, ofstream&, ofstream&, ofstream&,
+                fmap2&, fmap2&, fmap2&, ofstream&, ofstream&, ofstream&, ofstream&, ofstream&,
+                fmap2&, fmap2&, fmap2&, ofstream&, ofstream&, ofstream&, ofstream&, ofstream&
                 );
     void input_to_output(const recoc::input &, recoc::output &);
     void calc_diff(const recoc::output &, const recoc::output &, dmap2 &);
@@ -34,6 +34,7 @@ class analyzer2
     void single_converter(const double [4], dmap2 &, string);
     void write_int(int &, ofstream &);
     void write_int(long unsigned int &, ofstream &);
+    void write_int(double &, ofstream &);
 
     smearer smr;
     vector<pair<int, double *>> ps; // smeared particles

@@ -108,6 +108,8 @@ struct output {
 
     int inner_min_status;
     int outer_min_status;
+    double inner_edm;
+    double outer_edm;
     double weight;
 };
 

@@ -39,7 +39,7 @@ void smearer::smear(const vector<pair<int, double *>> &p,
             continue;
         }
         if (id == 11 || id == -11) {
-            smear_(l_res, in_p, 0.000511, out_p);
+            smear_givemass_(l_res, in_p, 0.000511, out_p);
             continue;
         }
         if (id == 13 || id == -13) {
@@ -57,6 +57,7 @@ inline void smearer::smear_(const resolution &res, const double *p,
                             const double m, double *op)
 {
     const double mass = pow( ( pow(p[0],2) - pow(p[1],2) - pow(p[2],2) - pow(p[3],2) ), 0.5);
+    //cout << "m2 = " << pow(p[0],2) - pow(p[1],2) - pow(p[2],2) - pow(p[3],2) << endl; 
 
     const double pT = sqrt(p[1] * p[1] + p[2] * p[2]);
     const double eta = asinh(p[3] / pT);
@@ -72,6 +73,58 @@ inline void smearer::smear_(const resolution &res, const double *p,
     const double px = cos(phi_n) * pT_n;
     const double py = sin(phi_n) * pT_n;
     const double pz = sinh(eta_n) * pT_n;
+
+    /*cout << "p0, p1, p2, p3" << endl;
+    cout << p[0] << " " << p[1] << " " << p[2] << " " << p[3] << endl;
+    cout << "mass, pt, eta, phi, px, py, pz" << endl;
+    cout << mass << endl;
+    cout << pT << endl;
+    cout << eta << endl;
+    cout << phi << endl;
+    cout << px << endl;
+    cout << py << endl;
+    cout << pz << endl;*/
+
+    //op[0] = sqrt(m * m + px * px + py * py + pz * pz);
+    op[0] = sqrt(mass * mass + px * px + py * py + pz * pz);
+    op[1] = px;
+    op[2] = py;
+    op[3] = pz;
+}
+
+inline void smearer::smear_givemass_(const resolution &res, const double *p,
+                            const double m, double *op)
+{
+    //const double mass = pow( ( pow(p[0],2) - pow(p[1],2) - pow(p[2],2) - pow(p[3],2) ), 0.5);
+    //cout << "m2 = " << pow(p[0],2) - pow(p[1],2) - pow(p[2],2) - pow(p[3],2) << endl; 
+
+    const double mass = m;
+
+    const double pT = sqrt(p[1] * p[1] + p[2] * p[2]);
+    const double eta = asinh(p[3] / pT);
+    double phi = asin(p[2] / pT);
+    if (p[1] < 0)
+        phi = PI - phi;
+
+    const double rel_pT_dev = 1 + res.pT * normal(generator);
+    const double pT_n = pT * rel_pT_dev;
+    const double phi_n = phi + res.phi * normal(generator);
+    const double eta_n = eta + res.eta * normal(generator);
+
+    const double px = cos(phi_n) * pT_n;
+    const double py = sin(phi_n) * pT_n;
+    const double pz = sinh(eta_n) * pT_n;
+
+    /*cout << "p0, p1, p2, p3" << endl;
+    cout << p[0] << " " << p[1] << " " << p[2] << " " << p[3] << endl;
+    cout << "mass, pt, eta, phi, px, py, pz" << endl;
+    cout << mass << endl;
+    cout << pT << endl;
+    cout << eta << endl;
+    cout << phi << endl;
+    cout << px << endl;
+    cout << py << endl;
+    cout << pz << endl;*/
 
     //op[0] = sqrt(m * m + px * px + py * py + pz * pz);
     op[0] = sqrt(mass * mass + px * px + py * py + pz * pz);

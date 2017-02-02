@@ -745,6 +745,7 @@ struct big_struct{
         //best_innermost_chi2() { return nontops.best_innermost_params.chi2; }
 
         double last_total_inner_chi2;
+        double last_total_outer_chi2 = 1e20;
 
         double current_total_hadronic_chi2() {
             double hadchi2 = 0;
@@ -797,7 +798,8 @@ struct big_struct{
 
         int innerMinStatus = -1;
         int outerMinStatus = -1;
-        int outerMin_Edm = -1;
+        double outerMin_Edm = -1;
+        double innerMin_Edm = -1;
         //big_struct() {}
 
 }; //END big_struct definition

@@ -29,15 +29,19 @@ topEventMinimizer::topEventMinimizer(big_struct & bigstructure, int& debug)
 void topEventMinimizer::Initialize_minimizers(ROOT::Math::Minimizer *&outer,
                                               ROOT::Math::Minimizer *&inner)
 {
-    outer = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
+    outer = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Minimize");
     outer->SetMaxFunctionCalls(1000000);
     outer->SetTolerance(0.001);
     outer->SetPrintLevel(5);
 
+    //ROOT::Math::MinimizerOptions inner_opt;
     inner = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
     inner->SetMaxFunctionCalls(1000000);
     inner->SetTolerance(0.001);
     inner->SetPrintLevel(0);
+
+    //inner_opt.SetMinimizerAlgorithm("Simplex");
+    //inner->SetOptions(inner_opt);
 }
 
 topEventMinimizer::~topEventMinimizer()
@@ -237,11 +241,12 @@ void topEventMinimizer::findStartingValues(int nPoints)
 
     // cout << "Corrected non-top objects:" << endl;
     // nonTopChiSquare_.printResults();
+    //cout << "end findstartingvalues" << endl;
 }
 
 double topEventMinimizer::innerMinimizationOperator(const double *inputDeltas)
 {
-    // cout<<"at innermin operator"<<endl;
+     //cout<<"at innermin operator"<<endl;
     // printTopConstituents();
 //    vector<double> ellipseAnglesCurrent;
 //    vector<double> topMassDeltasCurrent;
@@ -249,9 +254,12 @@ double topEventMinimizer::innerMinimizationOperator(const double *inputDeltas)
     int i = 0;
     for (int j=0; j < bigstruct.n_tops(); ++j){
         bigstruct.tops.at(j)->vars.theta = inputDeltas[i];
+        //cout << "inputDeltas[i] at " << i << " = " << inputDeltas[i] << endl;
         ++i;
 
         bigstruct.tops.at(j)->vars.delta_mTop = inputDeltas[i];
+        //cout << "inputDeltas[i] at " << i << " = " << inputDeltas[i] << endl;
+
         ++i;
     }
 
@@ -270,18 +278,21 @@ double topEventMinimizer::innerMinimizationOperator(const double *inputDeltas)
     int jhere = 0;
     for (auto it = topSysChiSqs_.begin(); it != topSysChiSqs_.end(); ++it){
         //(*it)->setupWDaughter2EllipsePart2();
+        (*it).calc_hperp_nperp();
+        (*it).setEllipseAngle();
         if ( bigstruct.tops.at(jhere)->vars.error_flag == true ){
             return bigstruct.last_total_inner_chi2 + 0.1;
         }
-        (*it).calc_hperp_nperp();
-        (*it).setEllipseAngle();
         ++jhere;
     }
 
     //Calculate minimum non-top chisquare configuration for this theta
+    //cout << "beginning clacmin nontop" << endl;
     nonTopChiSquare_.calcMin();
+    //cout << "finished clacmin nontop" << endl;
 
     if (bigstruct.current_total_inner_chi2() < bigstruct.current_best_total_inner_chi2() ){
+        int itemp = 0;
         for (auto top = bigstruct.tops.begin(); top != bigstruct.tops.end(); ++top){
             (*top)->best_inner_params.delta_mTop = (*top)->vars.delta_mTop;
             (*top)->best_inner_params.theta = (*top)->vars.theta;
@@ -289,8 +300,16 @@ double topEventMinimizer::innerMinimizationOperator(const double *inputDeltas)
             (*top)->best_inner_params.Wd2_py = (*top)->vars.Wd2_py;
             (*top)->best_inner_params.Wd2_pz = (*top)->vars.Wd2_pz;
 
+            //print
+            /*cout << "best_inner_params being set for top " << itemp << endl;
+            cout << "theta = " << (*top)->best_inner_params.theta << endl;
+            cout << "Wd2_px = " << (*top)->best_inner_params.Wd2_px << endl;
+            cout << "Wd2_py = " << (*top)->best_inner_params.Wd2_py << endl;
+            cout << "Wd2_pz = " << (*top)->best_inner_params.Wd2_pz << endl;*/
+
             (*top)->best_inner_params.Wd2_chi2 = (*top)->calc.Wd2_chi2();
             (*top)->best_inner_params.mTop_chi2 = (*top)->calc.mTop_chi2();
+            itemp++;
         }
         nontops.best_inner_params.jet_dif_px = nontops.best_innermost_params.jet_dif_px;
         nontops.best_inner_params.jet_dif_py = nontops.best_innermost_params.jet_dif_py;
@@ -300,6 +319,7 @@ double topEventMinimizer::innerMinimizationOperator(const double *inputDeltas)
     }
 
     bigstruct.last_total_inner_chi2 = bigstruct.current_total_inner_chi2();
+    //cout << "end innermin operator" << endl;
 
     //return innerChi2;
     return bigstruct.current_total_inner_chi2();
@@ -335,6 +355,7 @@ void topEventMinimizer::minimizeNonTopChiSquare()
     double step_theta = 0.02 * 3.14159265359;
     double step_mTop = 0.1;
     //const double max = 0.1;
+    //double max = 3.14159265359;
 
     //double step_theta = 0.1 * 3.14159265359;
     //double step_mTop = 0.5;
@@ -358,11 +379,16 @@ void topEventMinimizer::minimizeNonTopChiSquare()
 
         hasHighEdge = bigstruct.tops.at(iTop)->vars.has_high_edge;
         deltaMTopRangeLow = bigstruct.tops.at(iTop)->vars.delta_mTop_range_low;
-        deltaMTopRangeHigh = min(bigstruct.tops.at(iTop)->vars.delta_mTop_range_high, maxConsideredChiSquareRoot_);
+        deltaMTopRangeHigh = bigstruct.tops.at(iTop)->vars.delta_mTop_range_high;
+        double middlerange = (deltaMTopRangeLow + deltaMTopRangeHigh)/2;
+        /*cout << "deltaMTopRangeLow = " << deltaMTopRangeLow << endl;
+        cout << "deltaMTopRangeHigh = " << deltaMTopRangeHigh << endl;
+        cout << "middlerange = " << middlerange << endl;*/
+        //deltaMTopRangeHigh = min(bigstruct.tops.at(iTop)->vars.delta_mTop_range_high, maxConsideredChiSquareRoot_);
 
         //test giving it full range of top mass
-        deltaMTopRangeLow = -30.;
-        deltaMTopRangeHigh = 30.;
+//        deltaMTopRangeLow = -30.;
+//        deltaMTopRangeHigh = 30.;
 
         //hasHighEdge = 1;
         //deltaMTopRangeLow = -0.1;
@@ -377,9 +403,25 @@ void topEventMinimizer::minimizeNonTopChiSquare()
         parName = "deltaMTop_";
         parName += iTop;
 
+        innerMin_->SetLimitedVariable(iPar, string(parName),
+                                           middlerange, step_mTop,
+                                           deltaMTopRangeLow, deltaMTopRangeHigh);
+
+
         //Test giving it no limits
-        innerMin_->SetVariable(
-            iPar, string(parName), bigstruct.tops.at(iTop)->best_inner_params.delta_mTop, step_mTop);
+//        if (iPar == 3){
+/*            innerMin_->SetLowerLimitedVariable(iPar, string(parName),
+                                               bigstruct.tops.at(iTop)->best_inner_params.delta_mTop, step_mTop,
+                                               0.2);*/
+/*        innerMin_->SetLowerLimitedVariable(iPar, string(parName),
+                                               0.8, step_mTop,
+                                               0.2);
+        } else {*/
+
+
+/*        innerMin_->SetVariable(
+            iPar, string(parName), bigstruct.tops.at(iTop)->best_inner_params.delta_mTop, step_mTop);*/
+       // }
 
         
         
@@ -412,7 +454,14 @@ void topEventMinimizer::minimizeNonTopChiSquare()
     }
 
     // cout << "Starting the inner minimization" << endl;
+
+    //innerMin_->FixVariable(0);
+//    innerMin_->FixVariable(1);
+    //innerMin_->FixVariable(2);
+//    innerMin_->FixVariable(3);
+
     innerMin_->Minimize();
+    //cout << "end nontopchisquare" << endl;
 
 
 }
@@ -440,8 +489,35 @@ double topEventMinimizer::outerMinimizationOperator(const double *inputDeltas)
         bigstruct.tops.at(iTop)->vars.Wd1_delta_eta = inputDeltas[i+5];
         bigstruct.tops.at(iTop)->vars.delta_mW = inputDeltas[i+6];
         i += 7;
+
+        /*cout << "iTop = " << iTop << endl;
+        cout << "b_pt, b_phi, b_eta, wd1_pt, wd1_phi, wd1_eta, delta_mW" << endl;
+        cout << bigstruct.tops.at(iTop)->vars.b_delta_pt << endl;
+        cout << bigstruct.tops.at(iTop)->vars.b_delta_phi << endl;
+        cout << bigstruct.tops.at(iTop)->vars.b_delta_eta << endl;
+        cout << bigstruct.tops.at(iTop)->vars.Wd1_delta_pt << endl;
+        cout << bigstruct.tops.at(iTop)->vars.Wd1_delta_phi << endl;
+        cout << bigstruct.tops.at(iTop)->vars.Wd1_delta_eta << endl;
+        cout << bigstruct.tops.at(iTop)->vars.delta_mW << endl;*/
         
         (topSysChiSqs_.at(iTop)).preSetupWDaughter2Ellipse();
+        bool hasrange = (topSysChiSqs_.at(iTop)).findTopMassRange();
+        //If there is no top mass range for which Z2>0, set the chi2 to a value slightly
+        //larger than before, and get out so minuit can try the next step
+        if (!hasrange) {
+            bigstruct.last_total_outer_chi2 += 100;
+            cout << "last total outer chi2 + 100 = " << bigstruct.last_total_outer_chi2 << endl;
+            return bigstruct.last_total_outer_chi2;
+        }
+
+/*        //Test Z2 values
+        cout << "This is top " << iTop << endl;
+        for (int mt = -30; mt < 30; ++mt){
+            bigstruct.tops.at(iTop)->vars.delta_mTop = 0.1*mt;
+            double z2 = (topSysChiSqs_.at(iTop)).getZ2();
+            cout << 0.1*mt << " mTop = " << bigstruct.tops.at(iTop)->calc.mTop() << "  Z2 = " << z2 << endl;
+        } */
+
 
     }
 
@@ -488,16 +564,18 @@ double topEventMinimizer::outerMinimizationOperator(const double *inputDeltas)
 
     }
 
+    bigstruct.last_total_outer_chi2 = bigstruct.current_total_outer_chi2();
+
     return bigstruct.current_total_outer_chi2();
 }
 
 void topEventMinimizer::minimizeTotalChiSquare()
 {
-    if (debug_verbosity >= 2){
+    //if (debug_verbosity >= 2){
         cout << "minimizeTotalChiSquare" << endl;
         //printTopConstituents();
         //printNonTopObjects();
-    }
+    //}
 
     //     std::cout<<"at min"<<std::endl;
     const int nParameters = 7 * bigstruct.n_tops(); // 3 per b-jet + 3 per W daughter 1 + 1
@@ -606,9 +684,9 @@ void topEventMinimizer::minimizeTotalChiSquare()
     // std::cout<<"before minimize"<<std::endl;
     // cout << "Starting outer minimization" << endl;
 
-    //Fix top masses
+/*    //Fix top masses
     innerMin_->FixVariable(1);
-    innerMin_->FixVariable(3);
+    innerMin_->FixVariable(3);*/
 
 /*    //Fix top 1
     innerMin_->FixVariable(0);
@@ -632,6 +710,29 @@ void topEventMinimizer::minimizeTotalChiSquare()
     outerMin_->FixVariable(12);
     outerMin_->FixVariable(13);*/
 
+/*    //Fix top 1
+    //innerMin_->FixVariable(0);
+    //innerMin_->FixVariable(1);
+    outerMin_->FixVariable(0);
+    outerMin_->FixVariable(1);
+    outerMin_->FixVariable(2);
+    outerMin_->FixVariable(3);
+    outerMin_->FixVariable(4);
+    outerMin_->FixVariable(5);
+    outerMin_->FixVariable(6);
+
+    //Fix top 2
+    //innerMin_->FixVariable(2);
+    //innerMin_->FixVariable(3);
+    outerMin_->FixVariable(7);
+    outerMin_->FixVariable(8);
+    outerMin_->FixVariable(9);
+    outerMin_->FixVariable(10);
+    outerMin_->FixVariable(11);
+    outerMin_->FixVariable(12);
+    outerMin_->FixVariable(13);*/
+
+    //innerMin_->Minimize();
     
     outerMin_->Minimize();
 
@@ -670,8 +771,11 @@ void topEventMinimizer::minimizeTotalChiSquare()
     bigstruct.outerMinStatus = outerMin_->Status();
     bigstruct.innerMinStatus = innerMin_->Status();
     bigstruct.outerMin_Edm = outerMin_->Edm();
+    bigstruct.innerMin_Edm = innerMin_->Edm();
 
     setBestValues();
+
+    //plot_chis();
 
     cout << "THIS IS TOP 1" << endl;
     commonstruct::print_top_all( *(bigstruct.tops.at(0)) );
@@ -684,7 +788,7 @@ void topEventMinimizer::minimizeTotalChiSquare()
 
 void topEventMinimizer::setBestValues()
 {
-    // cout << "Setting delta values corresponding to the minimum total chi^2 I
+     //cout << "setBestValues begin" << endl;
     // found: " << chi2Best_ << endl;
 
     //Sets vars sub-structure elements (i.e. Minuit input parameters)
@@ -710,6 +814,11 @@ void topEventMinimizer::setBestValues()
         (*top)->vars.Wd2_px = (*top)->best_outer_params.Wd2_px;
         (*top)->vars.Wd2_py = (*top)->best_outer_params.Wd2_py;
         (*top)->vars.Wd2_pz = (*top)->best_outer_params.Wd2_pz;
+
+/*        cout << "theta = " << (*top)->vars.theta << endl;
+        cout << "Wd2_px = " << (*top)->vars.Wd2_px << endl;
+        cout << "Wd2_py = " << (*top)->vars.Wd2_py << endl;
+        cout << "Wd2_pz = " << (*top)->vars.Wd2_pz << endl;*/
 
         (*top)->vars.delta_mTop = (*top)->best_outer_params.delta_mTop;
         (*top)->vars.delta_mW = (*top)->best_outer_params.delta_mW;
@@ -884,4 +993,44 @@ int topEventMinimizer::get_outer_min_status()
     return bigstruct.outerMinStatus;
 }
 
+double topEventMinimizer::get_inner_edm()
+{
+    return bigstruct.innerMin_Edm;
+}
+double topEventMinimizer::get_outer_edm()
+{
+    return bigstruct.outerMin_Edm;
+}
 
+void topEventMinimizer::plot_chis()
+{
+    int n = 200;
+    double spacing = 0.02;
+    double angl1[n];
+    double thet1[n];
+    double pii = 3.1415926535;
+       // = bigstruct.tops.at(0).best_outer_params.theta;
+
+    cout << "theta min is " << bigstruct.tops.at(1)->best_outer_params.theta << endl;
+
+    for (int i = 0; i<n; i++){
+        bigstruct.tops.at(1)->vars.theta = i*spacing*pii - pii - pii;
+        topSysChiSqs_.at(1).preSetupWDaughter2Ellipse();
+        topSysChiSqs_.at(1).setupWDaughter2EllipsePart2();
+        topSysChiSqs_.at(1).calc_hperp_nperp();
+        topSysChiSqs_.at(1).setEllipseAngle();
+        thet1[i] = bigstruct.tops.at(1)->calc.Wd2_chi2();
+        angl1[i] = i*spacing*pii - pii - pii;
+        cout << "thet1 at i = " << i << " = " << thet1[i] << endl;
+    }
+
+    TCanvas* canvas = new TCanvas("canvas");
+    TGraph *g = new TGraph(n,angl1,thet1);
+    g->SetMarkerStyle(2);
+
+    cout << "after tgraph" << endl;
+    g->Draw("ap");
+     cout << "after draw" << endl;
+    canvas->Print("plotplot.pdf");
+ 
+}
