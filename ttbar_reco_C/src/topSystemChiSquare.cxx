@@ -10,7 +10,7 @@ using namespace commonstruct;
 topSystemChiSquare::topSystemChiSquare( top_system & topsystem, int &debug )
     : topsys(topsystem), WDaughter2Calc_( topsys, debug ), debug_verbosity(debug)
 {
-    if (debug_verbosity >= 2)
+    //if (debug_verbosity >= 2)
         cout << "starting topSystemChiSquare constructor" << endl;
     //setupWDaughter2Ellipse();
 }

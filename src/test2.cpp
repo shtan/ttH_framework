@@ -11,12 +11,28 @@
 using namespace std;
 //using namespace maps;
 
+void open_files_new(string);
+void close_files_new();
 void open_files(fmap2&, string, string);
 void close_files(fmap2&);
 void open_file(ofstream&, string, string);
 void close_file(ofstream&);
 vector<string> particles;
 vector<string> variables;
+vector<string> fitstatus;
+vector<string> dataset;
+vector<string> datasetdiff;
+vector<string> singleints;
+vector<string> singledoubles;
+vector<string> chi2s;
+vector<string> diffvals;
+
+fmap4 file_diff_part_var;
+fmap4 file_data_part_var;
+fmap2 file_singleint;
+fmap2 file_singledouble;
+fmap2 file_chisquares;
+fmap3 file_diff_diffvals;
 
 int main(int argc, char* argv[])
 {
@@ -30,7 +46,24 @@ int main(int argc, char* argv[])
 
     variables = {"Pt", "Phi", "Eta", "M"};
 
+    fitstatus = {"all", "converged", "failed"};
+
+    dataset = {"gen", "smeared", "best"};
+
+    datasetdiff = {"best_gen", "smeared_gen", "best_smeared"};
+
+    singleints = {"inner_status", "outer_status", "event_number"};
+    singledoubles = {"inner_edm", "outer_edm"};
+
+    chi2s = {"Bottom_1", "Wd11", "mW1", "mTop_1",
+                 "Bottom_2", "Wd21", "Wd22", "mW2", "mTop_2",
+                 "b1_from_H", "b2_from_H"};
+
+    diffvals = {"diff_chi2_measurable", "diff_chi2_masses", "diff_chi2_neutrino",
+                "diff_chi2_measurableplusmasses", "diff_chi2_total"};
+
     LHEF_lite reader("ttbb_h_bbbbdue.lhe");
+
     unsigned long neve = atoi(argv[1]);
     unsigned long max_ev = atoi(argv[2]) + 1;
 
@@ -39,7 +72,27 @@ int main(int argc, char* argv[])
     vector<pair<int, double *>> p; // particles
     vector<pair<int, int>> moth_ID;
 
-    //fmap2 outfiles_best_gen;
+/*    fmap4 file_diff_part_var;
+    fmap4 file_data_part_var;
+    fmap2 file_singleint;
+    fmap2 file_singledouble;
+    fmap2 file_chisquares;
+    fmap3 file_diff_diffvals;*/
+
+/*    cout << "before blah" << endl;
+        ROOT::Math::Minimizer *blah = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Minimize");
+        cout << "after blah"<< endl;*/
+
+    open_files_new(path_suffix);
+    /*cout << "before blah" << endl;
+        ROOT::Math::Minimizer *blah = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Minimize");
+        cout << "after blah"<< endl;
+    exit(0);*/
+    //close_files_new();
+    //exit(0);
+
+
+/*    //fmap2 outfiles_best_gen;
     //fmap2 outfiles_smeared_gen;
     fmap2 outfiles_best_gen_all;
     fmap2 outfiles_smeared_gen_all;
@@ -82,9 +135,9 @@ int main(int argc, char* argv[])
     ofstream outfile_outer_edm_failed;
     ofstream outfile_smeared_gen_diffchi2_failed;
     ofstream outfile_best_gen_diffchi2_failed;
-    ofstream outfile_best_smeared_diffchi2_failed;
+    ofstream outfile_best_smeared_diffchi2_failed;*/
 
-    //open_files(outfiles_best_gen, "best_gen");
+/*    //open_files(outfiles_best_gen, "best_gen");
     //open_files(outfiles_smeared_gen, "smeared_gen");
     open_files(outfiles_best_gen_all, "best_gen_all", path_suffix);
     open_files(outfiles_smeared_gen_all, "smeared_gen_all", path_suffix);
@@ -130,7 +183,7 @@ int main(int argc, char* argv[])
     open_file(outfile_best_smeared_diffchi2_failed, "best_smeared_diffchi2_failed", path_suffix);
 
     //ofstream outfile;
-    //outfile.open ( "./results/fit_output.txt" );
+    //outfile.open ( "./results/fit_output.txt" );*/
 
     ex1::analyzer2 a;
    for (unsigned long int0 = 0; int0 < neve; int0++){
@@ -144,7 +197,11 @@ int main(int argc, char* argv[])
         cout << "ANALYSING EVENT " << neve << endl;
         //++neve;
 
-        a.analz(p, moth_ID, neve, outfiles_best_gen_all, outfiles_smeared_gen_all,
+        a.analz(p, moth_ID, neve, file_diff_part_var, file_data_part_var, file_singleint,
+                file_singledouble, file_chisquares, file_diff_diffvals);
+
+        
+/*        a.analz(p, moth_ID, neve, outfiles_best_gen_all, outfiles_smeared_gen_all,
                 outfiles_best_gen_converged, outfiles_smeared_gen_converged,
                 outfiles_best_gen_failed, outfiles_smeared_gen_failed,
                 outfiles_best_all, outfiles_smeared_all, outfiles_gen_all,
@@ -159,12 +216,14 @@ int main(int argc, char* argv[])
                 outfile_smeared_gen_diffchi2_all, outfile_best_gen_diffchi2_all, outfile_best_smeared_diffchi2_all,
                 outfile_smeared_gen_diffchi2_converged, outfile_best_gen_diffchi2_converged, outfile_best_smeared_diffchi2_converged,
                 outfile_smeared_gen_diffchi2_failed, outfile_best_gen_diffchi2_failed, outfile_best_smeared_diffchi2_failed
-                );
-        cout << "exited analz" << endl;
+                );*/
+        //cout << "exited analz" << endl;
     ++neve;
     }
 
-    cout << "before close files" << endl;
+    close_files_new();
+
+/*    cout << "before close files" << endl;
 
     close_files(outfiles_best_gen_all);
     close_files(outfiles_smeared_gen_all);
@@ -211,7 +270,7 @@ int main(int argc, char* argv[])
     close_file(outfile_best_gen_diffchi2_failed);
     close_file(outfile_best_smeared_diffchi2_failed);
 
-    //outfile.close();
+    //outfile.close();*/
 
     for (auto i : p)
         delete i.second;
@@ -219,7 +278,190 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-void open_files( fmap2 &outfiles, string prefix, string path_suffix )
+void open_files_new( string path_suffix)
+{
+    //string bigpath = path + path_suffix + "/";
+    string bigpath = "/afs/cern.ch/work/s/shtan/private/topreco_20161213/20170213/new_file_system/" + path_suffix + "/";
+    //outpath = "/afs/cern.ch/user/s/shtan/teststorage/";
+
+    //fmap outfiles;
+
+    cout << file_diff_part_var.max_size() << endl;
+    int counter = 0;
+
+    for (auto fs = fitstatus.begin(); fs != fitstatus.end(); ++fs){
+        const string fits = *fs;
+        for (auto d = datasetdiff.begin(); d != datasetdiff.end(); ++d){
+            const string diff = *d;
+            for (auto p = particles.begin(); p != particles.end(); ++p){
+                const string part = *p;
+                for (auto v = variables.begin(); v != variables.end(); ++v){
+                    const string var = *v;
+                    ofstream* tempfile = new ofstream;
+                    //tempfile.open (
+                    //        (bigpath + diff + "_" + part + "_" + var + "_" + fits + ".txt").c_str() );
+
+                    file_diff_part_var[fits][diff][part][var] = tempfile;
+                    file_diff_part_var[fits][diff][part][var]->open (
+                            (bigpath + diff + "_" + part + "_" + var + "_" + fits + ".txt").c_str() );
+                    //    .open (
+                    //        (bigpath + diff + "_" + part + "_" + var + "_" + fits + ".txt").c_str() );
+                    *file_diff_part_var[fits][diff][part][var] << "ha" << endl;
+            //cout <<  (outpath + prefix + "_" + part + "_" + var + ".txt").c_str() << endl;
+                    cout << "wrote file " << fits << diff << part << var << endl;
+                    counter++;
+                }
+            }
+        }
+    }
+
+    for (auto fs = fitstatus.begin(); fs != fitstatus.end(); ++fs){
+        const string fits = *fs;
+        for (auto d = dataset.begin(); d != dataset.end(); ++d){
+            const string data = *d;
+            for (auto p = particles.begin(); p != particles.end(); ++p){
+                const string part = *p;
+                for (auto v = variables.begin(); v != variables.end(); ++v){
+                    const string var = *v;
+                    ofstream* tempfile = new ofstream;
+                    file_data_part_var[fits][data][part][var] = tempfile;
+                    file_data_part_var[fits][data][part][var]->open ( (bigpath + data + "_" + part + "_" + var + "_" + fits + ".txt").c_str() );
+                    *file_data_part_var[fits][data][part][var] << "ha" << endl;
+                    cout << "wrote file " << fits << data << part << var << endl;
+                    counter++;
+                }
+            }
+        }
+    }
+
+    for (auto fs = fitstatus.begin(); fs != fitstatus.end(); ++fs){
+        const string fits = *fs;
+        for (auto s = singleints.begin(); s != singleints.end(); ++s){
+            const string single = *s;
+            ofstream * tempfile = new ofstream;
+            file_singleint[fits][single] = tempfile;
+            file_singleint[fits][single]->open ( (bigpath + single + "_" + fits + ".txt").c_str() );
+            *file_singleint[fits][single] << "ha" << endl;
+            cout << "wrote file " << fits << single << endl;
+            counter++;
+        }
+    }
+
+    for (auto fs = fitstatus.begin(); fs != fitstatus.end(); ++fs){
+        const string fits = *fs;
+        for (auto s = singledoubles.begin(); s != singledoubles.end(); ++s){
+            const string single = *s;
+            ofstream *tempfile = new ofstream;
+            file_singledouble[fits][single] = tempfile;
+            file_singledouble[fits][single]->open ( (bigpath + single + "_" + fits + ".txt").c_str() );
+            *file_singledouble[fits][single] << "ha" << endl;
+            cout << "wrote file " << fits << single << endl;
+            counter++;
+        }
+    }
+
+    for (auto fs = fitstatus.begin(); fs != fitstatus.end(); ++fs){
+        const string fits = *fs;
+        for (auto c = chi2s.begin(); c != chi2s.end(); ++c){
+            const string chi = *c;
+            ofstream* tempfile = new ofstream;
+            file_chisquares[fits][chi] = tempfile;
+            file_chisquares[fits][chi]->open ( (bigpath + "chi2_" + chi + "_" + fits + ".txt").c_str() );
+            *file_chisquares[fits][chi] << "ha" << endl;
+            cout << "wrote file " << fits << chi << endl;
+            counter++;
+        }
+    }
+
+    for (auto fs = fitstatus.begin(); fs != fitstatus.end(); ++fs){
+        const string fits = *fs;
+        for (auto d = datasetdiff.begin(); d != datasetdiff.end(); ++d){
+            const string diff = *d;
+            for (auto v = diffvals.begin(); v != diffvals.end(); ++v){
+                const string val = *v;
+                ofstream* tempfile = new ofstream;
+                file_diff_diffvals[fits][diff][val] = tempfile;
+                file_diff_diffvals[fits][diff][val]->open ( (bigpath + diff + "_" + val + "_" + fits + ".txt").c_str() );
+                cout << "opening file " << fits << diff << val << endl;
+                *file_diff_diffvals[fits][diff][val] << "ha" << endl;
+                cout << "wrote file " << fits << diff << val << endl;
+                counter++;
+            }
+        }
+    }
+    cout << "counter = " << counter << endl;
+
+}
+
+void close_files_new()
+{
+
+    for (auto fs = fitstatus.begin(); fs != fitstatus.end(); ++fs){
+        const string fits = *fs;
+        for (auto d = datasetdiff.begin(); d != datasetdiff.end(); ++d){
+            const string diff = *d;
+            for (auto p = particles.begin(); p != particles.end(); ++p){
+                const string part = *p;
+                for (auto v = variables.begin(); v != variables.end(); ++v){
+                    const string var = *v; 
+                    file_diff_part_var[fits][diff][part][var]->close();
+                }
+            }
+        }
+    }
+
+    for (auto fs = fitstatus.begin(); fs != fitstatus.end(); ++fs){
+        const string fits = *fs;
+        for (auto d = dataset.begin(); d != dataset.end(); ++d){
+            const string data = *d;
+            for (auto p = particles.begin(); p != particles.end(); ++p){
+                const string part = *p;
+                for (auto v = variables.begin(); v != variables.end(); ++v){
+                    const string var = *v;
+                    file_data_part_var[fits][data][part][var]->close();
+                }
+            }
+        }
+    }
+
+    for (auto fs = fitstatus.begin(); fs != fitstatus.end(); ++fs){
+        const string fits = *fs;
+        for (auto s = singleints.begin(); s != singleints.end(); ++s){
+            const string single = *s;
+            file_singleint[fits][single]->close();
+        }
+    }
+
+    for (auto fs = fitstatus.begin(); fs != fitstatus.end(); ++fs){
+        const string fits = *fs;
+        for (auto s = singledoubles.begin(); s != singledoubles.end(); ++s){
+            const string single = *s;
+            file_singledouble[fits][single]->close();
+        }
+    }
+
+    for (auto fs = fitstatus.begin(); fs != fitstatus.end(); ++fs){
+        const string fits = *fs;
+        for (auto c = chi2s.begin(); c != chi2s.end(); ++c){
+            const string chi = *c;
+            file_chisquares[fits][chi]->close();
+        }
+    }
+
+    for (auto fs = fitstatus.begin(); fs != fitstatus.end(); ++fs){
+        const string fits = *fs;
+        for (auto d = datasetdiff.begin(); d != datasetdiff.end(); ++d){
+            const string diff = *d;
+            for (auto v = diffvals.begin(); v != diffvals.end(); ++v){
+                const string val = *v;
+                file_diff_diffvals[fits][diff][val]->close();
+            }
+        }
+    }
+
+}
+
+/*void open_files( fmap2 &outfiles, string prefix, string path_suffix )
 {
     string outpath = "/afs/cern.ch/work/s/shtan/private/topreco_20161213/20170207/diffchi2/" + path_suffix + "/";
     //outpath = "/afs/cern.ch/user/s/shtan/teststorage/";
@@ -263,6 +505,6 @@ void close_files( fmap2 &outfiles )
 void close_file( ofstream &file )
 {
     file.close();
-}
+}*/
 
 #endif

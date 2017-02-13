@@ -411,6 +411,9 @@ inline void Reset_bigstruct(big_struct &bigstruct)
 inline void Fill_bigstruct(const input &in, const parameters_ttRC &pa,
                            big_struct &bigstruct)
 {
+        /*cout << "fill bigstruct" << endl;
+        ROOT::Math::Minimizer *blah = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Minimize");
+        cout << "after blah" << endl;*/
     // Put in parameters and quantities for first top
     if (in.p.t1_lep) {
         bigstruct.tops.push_back( new top_system(
