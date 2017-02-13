@@ -102,6 +102,7 @@ struct chi_squareds {
 struct output {
     input_x<4> p;
     //input_x<1> particle_chi2s;
+    input_x<3> SD;
     parents<4> parents_p;
     //parents<1> parents_m_chi2s;
     chi_squareds chi2s;

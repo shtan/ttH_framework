@@ -197,6 +197,7 @@ inline void Fill_SDs_(const double p[4], const double unc[3], double SD[3])
 
 void Fill_SDs(recoc::input &in)
 {
+    cout << "inside Fill_SDs" << endl;
     auto &p = in.p;
     auto &SD = in.SD;
     const double j_res[3] = {0.1, 0.01, 0.01};  // jet: pT, phi, eta
@@ -219,15 +220,55 @@ void Fill_SDs(recoc::input &in)
         Fill_SDs_(p.d22, j_res, SD.d22);
     }
     
-    if (p.p_others.size() == 0)
-        return;
-    
+//    if (p.p_others.size() == 0)
+//        return;
+
     auto it1 = p.p_others.begin();
     auto it2 = SD.p_others.begin();
     const auto end = p.p_others.end();
     while (it1 != end) {
         Fill_SDs_(*it1, j_res, *it2);
     }
+
+    cout << "after original" << endl;
+    double metSD2[3] = {0., 0., 0.};
+
+    for (int i = 0; i<3; i++){
+        for (auto it = SD.p_others.begin(); it < SD.p_others.end(); ++it ){
+            metSD2[i] += pow( (*it)[i], 2);
+        }
+
+        metSD2[i] += pow( SD.b1[i], 2);
+        cout << "SD.b1 = " << SD.b1[0] << " " << SD.b1[1] << " " << SD.b1[2] << endl; 
+        metSD2[i] += pow( SD.b2[i], 2);
+        metSD2[i] += pow( SD.bH1[i], 2);
+        metSD2[i] += pow( SD.bH2[i], 2);
+        metSD2[i] += pow( SD.d11[i], 2);
+        if (!p.t1_lep){
+            metSD2[i] += pow( SD.d12[i], 2);
+        }
+        metSD2[i] += pow( SD.d21[i], 2);
+        if (!p.t2_lep){
+            metSD2[i] += pow( SD.d22[i], 2);
+        }
+    }
+
+    double metSD[3] = { pow(metSD2[0], 0.5), pow(metSD2[1], 0.5), pow(metSD2[2], 0.5) };
+    if (p.t1_lep){
+        memcpy(SD.d12, metSD, sizeof(SD.d12));
+    }
+    if (p.t2_lep){
+        memcpy(SD.d22, metSD, sizeof(SD.d22));
+    }
+
+    cout << "SD.d12 = " << SD.d12[0] << " " << SD.d12[1] << " " << SD.d12[2] << endl;
+
+    //return;
+}
+
+void analyzer2::smear_only(const pvec &p)
+{
+    smr.smear(p, ps);
 }
 
 void analyzer2::analz(const pvec &p, const movec &moth_ID, long unsigned int &event_num, fmap2 &outfiles_best_gen_all, fmap2 &outfiles_smeared_gen_all,
@@ -241,7 +282,11 @@ void analyzer2::analz(const pvec &p, const movec &moth_ID, long unsigned int &ev
                         ofstream &outfile_inner_edm_converged, ofstream &outfile_outer_edm_converged,
                         fmap2 &outfiles_best_failed, fmap2 &outfiles_smeared_failed, fmap2 &outfiles_gen_failed,
                         ofstream &outfile_inner_status_failed, ofstream &outfile_outer_status_failed, ofstream &outfile_event_number_failed,
-                        ofstream &outfile_inner_edm_failed, ofstream &outfile_outer_edm_failed)
+                        ofstream &outfile_inner_edm_failed, ofstream &outfile_outer_edm_failed,
+                        ofstream &outfile_smeared_gen_diffchi2_all, ofstream &outfile_best_gen_diffchi2_all, ofstream &outfile_best_smeared_diffchi2_all,
+                        ofstream &outfile_smeared_gen_diffchi2_converged, ofstream &outfile_best_gen_diffchi2_converged, ofstream &outfile_best_smeared_diffchi2_converged,
+                        ofstream &outfile_smeared_gen_diffchi2_failed, ofstream &outfile_best_gen_diffchi2_failed, ofstream &outfile_best_smeared_diffchi2_failed
+                        )
 {
     smr.smear(p, ps);
     ttbarX ttX = ident.identify(ex1::ttH_SL_bx, p, moth_ID);
@@ -305,15 +350,24 @@ cout << "result" << endl;
     reco_C.daughter_to_parents(genforcompare.p, genforcompare.parents_p);
     reco_C.daughter_to_parents(in_2_RC_forcompare.p, in_2_RC_forcompare.parents_p);
 
+    genforcompare.SD = generated.SD;
+    in_2_RC_forcompare.SD = in_2_RC.SD;
+
     cout << "result - genforcompare" << endl;
     calc_diff(result, genforcompare, best_gen);
     cout << "in2rc - genforcompare" << endl;
     calc_diff(in_2_RC_forcompare, genforcompare, smeared_gen);
+    calc_diff(result, in_2_RC_forcompare, best_smeared);
 
     dmap2_converter(result, best);
     dmap2_converter(in_2_RC_forcompare, smeared);
     dmap2_converter(genforcompare, gen);
 
+    double smeared_gen_diffchi2 = diff_chi2(smeared_gen, gen, genforcompare);
+    double best_gen_diffchi2 = diff_chi2(best_gen, gen, genforcompare);
+    double best_smeared_diffchi2 = diff_chi2(best_smeared, smeared, in_2_RC_forcompare);
+
+    cout << "out here!" << endl;
     write_diff(best_gen, outfiles_best_gen_all);
     write_diff(smeared_gen, outfiles_smeared_gen_all);
     
@@ -325,6 +379,12 @@ cout << "result" << endl;
     write_int(result.inner_edm, outfile_inner_edm_all);
     write_int(result.outer_edm, outfile_outer_edm_all);
     write_int(event_num, outfile_event_number_all);
+    cout << "before write new" << endl;
+    write_int(smeared_gen_diffchi2, outfile_smeared_gen_diffchi2_all);
+    cout << "after first write new" << endl;
+    write_int(best_gen_diffchi2, outfile_best_gen_diffchi2_all);
+    write_int(best_smeared_diffchi2, outfile_best_smeared_diffchi2_all);
+    cout << "after third write new" << endl;
 
     if ( (result.inner_min_status == 0 or result.inner_min_status == 1)
       and (result.outer_min_status == 0 or result.outer_min_status == 1) ){
@@ -338,6 +398,9 @@ cout << "result" << endl;
         write_int(result.inner_edm, outfile_inner_edm_converged);
         write_int(result.outer_edm, outfile_outer_edm_converged);
         write_int(event_num, outfile_event_number_converged);
+        write_int(smeared_gen_diffchi2, outfile_smeared_gen_diffchi2_converged);
+        write_int(best_gen_diffchi2, outfile_best_gen_diffchi2_converged);
+        write_int(best_smeared_diffchi2, outfile_best_smeared_diffchi2_converged);
     } else {
         write_diff(best_gen, outfiles_best_gen_failed);
         write_diff(smeared_gen, outfiles_smeared_gen_failed);
@@ -349,13 +412,17 @@ cout << "result" << endl;
         write_int(result.inner_edm, outfile_inner_edm_failed);
         write_int(result.outer_edm, outfile_outer_edm_failed);
         write_int(event_num, outfile_event_number_failed);
+        write_int(smeared_gen_diffchi2, outfile_smeared_gen_diffchi2_failed);
+        write_int(best_gen_diffchi2, outfile_best_gen_diffchi2_failed);
+        write_int(best_smeared_diffchi2, outfile_best_smeared_diffchi2_failed);
     }
 
-    
+   cout << "after all write" << endl; 
 
 
-    for (auto array : result.p.p_others)
-        delete array;
+/*    for (auto array : result.p.p_others)
+        delete array;*/
+    cout << "after delete" << endl;
 }
 
 /*void analyzer2::input_to_output(const recoc::input &in, recoc::output &out)
@@ -427,7 +494,7 @@ void analyzer2::single_converter(const double vec[4], dmap2 &dmapp, string partn
     double phi = vec[1];
     double eta = vec[2];
     principal_angle(phi);
-    principal_angle(eta);
+    //principal_angle(eta);
 
     dmapp[partname]["Phi"] = phi;
     dmapp[partname]["Eta"] = eta;
@@ -440,6 +507,89 @@ void analyzer2::single_converter(const double vec[4], dmap2 &dmapp, string partn
 
 }
 
+double analyzer2::one_p_chi2(dmap2 &diff, string partname, const double SD[3])
+{
+    cout << "starting one_p_chi2" << endl;
+    cout << partname << endl;
+    double pt = diff[partname]["Pt"];
+    double phi = diff[partname]["Phi"];
+    double eta = diff[partname]["Eta"];
+    double SD_pt = SD[0];
+    double SD_phi = SD[1];
+    double SD_eta = SD[2];
+    cout << "SD" << endl;
+    cout << SD_pt << endl;
+    cout << SD_phi << endl;
+    cout << SD_eta << endl;
+    cout << "P" << endl;
+    cout << pt << endl;
+    cout << phi << endl;
+    cout << eta << endl;
+
+    double chi2 = pow( pt/SD_pt, 2) + pow( phi/SD_phi, 2) + pow( eta/SD_eta, 2);
+    cout << "chi2 = " << chi2 << endl;
+
+    return chi2;
+}
+
+//Define breitWigner function to calculate mTop and mW chi2
+double analyzer2::breitWignerErr(const double &mass, const double &width, const double &deltaMass)
+{
+    cout << "in breitwigner" << endl;
+    double scaledDeltaMass = deltaMass * width;
+    double scaledDeltaMass2 = scaledDeltaMass * scaledDeltaMass;
+    double Zscore = ROOT::Math::normal_quantile(
+                0.31830988618379067154 *atan2(scaledDeltaMass2 + 2. * scaledDeltaMass * mass,
+                mass * width) + 0.5, 1.0);
+    return Zscore * Zscore;
+}
+
+
+double analyzer2::one_m_chi2(dmap2 &diff, dmap2 &control, string partname, const double width)
+{
+    cout << "starting one_m_chi2"<< endl;
+    cout << partname << endl;
+    double control_mass = control[partname]["M"];
+    double mass_diff = diff[partname]["M"];
+    double chi2 = breitWignerErr(control_mass, width, mass_diff);
+    cout << "chi2 = " << chi2 << endl;
+    return chi2;
+}
+
+double analyzer2::diff_chi2(dmap2 &diff, dmap2 &control, recoc::output &compare)
+{
+    cout << "starting diff_chi2" << endl;
+    double b1_chi2 = one_p_chi2(diff, "Bottom_1", compare.SD.b1);
+    double wd11_chi2 = one_p_chi2(diff, "Wd11", compare.SD.d11);
+    double wd12_chi2 = one_p_chi2(diff, "Wd12", compare.SD.d12);
+    double b2_chi2 = one_p_chi2(diff, "Bottom_2", compare.SD.b2);
+    double wd21_chi2 = one_p_chi2(diff, "Wd21", compare.SD.d21);
+    double wd22_chi2 = one_p_chi2(diff, "Wd22", compare.SD.d22);
+    double bH1_chi2 = one_p_chi2(diff, "b1_from_H", compare.SD.bH1);
+    double bH2_chi2 = one_p_chi2(diff, "b2_from_H", compare.SD.bH2);
+    double mW1_chi2 = one_m_chi2(diff, control, "W1", params.SD_m_W);
+    double mW2_chi2 = one_m_chi2(diff, control, "W2", params.SD_m_W);
+    double mTop1_chi2 = one_m_chi2(diff, control, "Top_1", params.SD_m_t);
+    double mTop2_chi2 = one_m_chi2(diff, control, "Top_2", params.SD_m_t);
+
+    double chi2 = b1_chi2 + wd11_chi2 + wd12_chi2 
+                    + b2_chi2 + wd21_chi2 + wd22_chi2
+                    + bH1_chi2 + bH2_chi2
+                    + mW1_chi2 + mW2_chi2 + mTop1_chi2 + mTop2_chi2;
+
+    /*//version without real neutrino
+    double chi2 = b1_chi2 + wd11_chi2 
+                    + b2_chi2 + wd21_chi2 + wd22_chi2
+                    + bH1_chi2 + bH2_chi2
+                    + mW1_chi2 + mW2_chi2 + mTop1_chi2 + mTop2_chi2;*/
+
+    /*//version without masses and without real neutrino
+    double chi2 = b1_chi2 + wd11_chi2 
+                    + b2_chi2 + wd21_chi2 + wd22_chi2
+                    + bH1_chi2 + bH2_chi2;*/
+    return chi2;
+}
+
 void analyzer2::one_diff(const double vec1[4], const double vec2[4], dmap2 &diff, string partname)
 {
     diff[partname]["Pt"] = vec1[0] - vec2[0];
@@ -447,7 +597,7 @@ void analyzer2::one_diff(const double vec1[4], const double vec2[4], dmap2 &diff
     double phi = vec1[1] - vec2[1];
     double eta = vec1[2] - vec2[2];
     principal_angle(phi);
-    principal_angle(eta);
+    //principal_angle(eta);
 
     diff[partname]["Phi"] = phi;
     diff[partname]["Eta"] = eta;

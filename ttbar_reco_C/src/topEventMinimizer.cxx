@@ -31,7 +31,7 @@ void topEventMinimizer::Initialize_minimizers(ROOT::Math::Minimizer *&outer,
 {
     outer = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Minimize");
     outer->SetMaxFunctionCalls(1000000);
-    outer->SetTolerance(0.001);
+    outer->SetTolerance(0.02);
     outer->SetPrintLevel(5);
 
     //ROOT::Math::MinimizerOptions inner_opt;
@@ -566,6 +566,7 @@ double topEventMinimizer::outerMinimizationOperator(const double *inputDeltas)
 
     bigstruct.last_total_outer_chi2 = bigstruct.current_total_outer_chi2();
 
+    //cout << "current total outer chi2 = " << bigstruct.current_total_outer_chi2() << endl;
     return bigstruct.current_total_outer_chi2();
 }
 
@@ -819,6 +820,12 @@ void topEventMinimizer::setBestValues()
         cout << "Wd2_px = " << (*top)->vars.Wd2_px << endl;
         cout << "Wd2_py = " << (*top)->vars.Wd2_py << endl;
         cout << "Wd2_pz = " << (*top)->vars.Wd2_pz << endl;*/
+        cout << "B chi2 from inside = " << (*top)->best_outer_params.b_chi2 << endl;
+        cout << "B delta pt = " << (*top)->best_outer_params.b_delta_pt << endl;
+        cout << "B delta phi = " << (*top)->best_outer_params.b_delta_phi<< endl;
+        cout << "B delta eta = " << (*top)->best_outer_params.b_delta_eta << endl;
+        cout << "mW chi2 from inside = " << (*top)->best_outer_params.mW_chi2 << endl;
+        cout << "mTop chi2 from inside = " << (*top)->best_outer_params.mTop_chi2 << endl;
 
         (*top)->vars.delta_mTop = (*top)->best_outer_params.delta_mTop;
         (*top)->vars.delta_mW = (*top)->best_outer_params.delta_mW;

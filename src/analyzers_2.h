@@ -20,10 +20,13 @@ class analyzer2
     ~analyzer2();
 
     //void analz(const pvec &, const movec &, ofstream &);
+    void smear_only(const pvec &);
     void analz(const pvec &, const movec &, long unsigned int &, fmap2 &, fmap2 &, fmap2 &, fmap2 &, fmap2 &, fmap2 &,
                 fmap2&, fmap2&, fmap2&, ofstream&, ofstream&, ofstream&, ofstream&, ofstream&,
                 fmap2&, fmap2&, fmap2&, ofstream&, ofstream&, ofstream&, ofstream&, ofstream&,
-                fmap2&, fmap2&, fmap2&, ofstream&, ofstream&, ofstream&, ofstream&, ofstream&
+                fmap2&, fmap2&, fmap2&, ofstream&, ofstream&, ofstream&, ofstream&, ofstream&,
+                ofstream&, ofstream&, ofstream&, ofstream&, ofstream&, ofstream&,
+                ofstream&, ofstream&, ofstream&
                 );
     void input_to_output(const recoc::input &, recoc::output &);
     void calc_diff(const recoc::output &, const recoc::output &, dmap2 &);
@@ -35,6 +38,10 @@ class analyzer2
     void write_int(int &, ofstream &);
     void write_int(long unsigned int &, ofstream &);
     void write_int(double &, ofstream &);
+    double one_p_chi2(dmap2 &, string, const double [3]);
+    double one_m_chi2(dmap2 &, dmap2 &, string, const double);
+    double breitWignerErr(const double &, const double &, const double &);
+    double diff_chi2(dmap2 &, dmap2 &, recoc::output &);
 
     smearer smr;
     vector<pair<int, double *>> ps; // smeared particles
@@ -46,6 +53,7 @@ class analyzer2
 
     dmap2 best_gen;
     dmap2 smeared_gen;
+    dmap2 best_smeared;
     dmap2 best;
     dmap2 smeared;
     dmap2 gen;
