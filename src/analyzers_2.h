@@ -28,23 +28,30 @@ class analyzer2
                 ofstream&, ofstream&, ofstream&, ofstream&, ofstream&, ofstream&,
                 ofstream&, ofstream&, ofstream&
                 );*/
-    void analz(const pvec &, const movec &, long unsigned int &, fmap4 &, fmap4 &, fmap2 &, fmap2 &, fmap2 &, fmap3 & 
-                );
+/*    void analz(const pvec &, const movec &, long unsigned int &, fmap4 &, fmap4 &, fmap2 &, fmap2 &, fmap2 &, fmap3 & 
+                );*/
+    void analz(const pvec &, const movec &, long unsigned int &, vdmap4 &, vdmap4 &, vimap2 &, vdmap2 &, vdmap2 &, vdmap3 & );
     void input_to_output(const recoc::input &, recoc::output &);
     void calc_diff(const recoc::output &, const recoc::output &, dmap2 &);
     void principal_angle(double&);
     void one_diff(const double [4], const double [4], dmap2 &, string);
+    void push_diff(dmap2 &, vdmap2 &);
     void write_diff(dmap2 &, fmap2 &);
     void write_big(string, recoc::output &, long unsigned int &, fmap4&, fmap4&, fmap2&, fmap2&, fmap2&, fmap3&);
+    void push_big(string, recoc::output &, long unsigned int &, vdmap4&, vdmap4&, vimap2&, vdmap2&, vdmap2&, vdmap3&);
     void dmap2_converter(const recoc::output &, dmap2 &);
     void single_converter(const double [4], dmap2 &, string);
+    void push_int(int &, vector<int>&);
+    void push_int(long unsigned int &, vector<int>&);
+    void push_int(double &, vector<double>&);
     void write_int(int &, ofstream *);
     void write_int(long unsigned int &, ofstream *);
     void write_int(double &, ofstream *);
     double one_p_chi2(dmap2 &, string, const double [3]);
     double one_m_chi2(dmap2 &, dmap2 &, string, const double);
     double breitWignerErr(const double &, const double &, const double &);
-    double diff_chi2(dmap2 &, dmap2 &, recoc::output &);
+    double diff_chi2(dmap2 &, dmap2 &, recoc::output &, string);
+    void get_chi2s(recoc::output &, dmap1 &);
 
     smearer smr;
     vector<pair<int, double *>> ps; // smeared particles

@@ -104,7 +104,9 @@ class topEventMinimizer
     int get_outer_min_status();
     double get_inner_edm();
     double get_outer_edm();
-    void plot_chis();
+    void plot_chi2s();
+    void plot_chi2_outer(int, double&, const double&, const double&, double&, string);
+    void plot_Wd22_chi2();
 
 
 

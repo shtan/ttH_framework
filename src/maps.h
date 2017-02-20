@@ -41,6 +41,13 @@ typedef map<string, fmap1> fmap2;
 typedef map<string, fmap2> fmap3;
 typedef map<string, fmap3> fmap4;
 
+typedef map<string, vector<double> > vdmap1;
+typedef map<string, vdmap1> vdmap2;
+typedef map<string, vdmap2> vdmap3;
+typedef map<string, vdmap3> vdmap4;
+
+typedef map<string, vector<int> > vimap1;
+typedef map<string, vimap1> vimap2;
 
 //}
 

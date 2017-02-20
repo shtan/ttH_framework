@@ -318,8 +318,8 @@ void analyzer2::smear_only(const pvec &p)
 }
 
 void analyzer2::analz(const pvec &p, const movec &moth_ID, long unsigned int &event_num,
-                        fmap4 &file_diff_part_var, fmap4 &file_data_part_var, fmap2 &file_singleint,
-                        fmap2 &file_singledouble, fmap2 &file_chisquares, fmap3 &file_diff_diffvals)
+                        vdmap4 &vec_diff_part_var, vdmap4 &vec_data_part_var, vimap2 &vec_singleint,
+                        vdmap2 &vec_singledouble, vdmap2 &vec_chisquares, vdmap3 &vec_diff_diffvals)
 /*void analyzer2::analz(const pvec &p, const movec &moth_ID, long unsigned int &event_num, fmap2 &outfiles_best_gen_all, fmap2 &outfiles_smeared_gen_all,
                         fmap2 &outfiles_best_gen_converged, fmap2 &outfiles_smeared_gen_converged,
                         fmap2 &outfiles_best_gen_failed, fmap2 &outfiles_smeared_gen_failed,
@@ -415,9 +415,39 @@ cout << "result" << endl;
     dmap2_converter(in_2_RC_forcompare, data_part_var["smeared"]);
     dmap2_converter(genforcompare, data_part_var["gen"]);
 
-    diff_diffvals["smeared_gen"]["diff_chi2_total"] = diff_chi2(diff_part_var["smeared_gen"], data_part_var["gen"], genforcompare);
-    diff_diffvals["best_gen"]["diff_chi2_total"] = diff_chi2(diff_part_var["best_gen"], data_part_var["gen"], genforcompare);
-    diff_diffvals["best_smeared"]["diff_chi2_total"] = diff_chi2(diff_part_var["best_smeared"], data_part_var["smeared"], in_2_RC_forcompare);
+    diff_diffvals["smeared_gen"]["diff_chi2_total"] = diff_chi2(diff_part_var["smeared_gen"], data_part_var["gen"], genforcompare, "total");
+    diff_diffvals["best_gen"]["diff_chi2_total"] = diff_chi2(diff_part_var["best_gen"], data_part_var["gen"], genforcompare, "total");
+    diff_diffvals["best_smeared"]["diff_chi2_total"] = diff_chi2(diff_part_var["best_smeared"], data_part_var["smeared"], in_2_RC_forcompare, "total");
+
+    diff_diffvals["smeared_gen"]["diff_chi2_measurable"] = diff_chi2(diff_part_var["smeared_gen"], data_part_var["gen"], genforcompare, "measurable");
+    diff_diffvals["best_gen"]["diff_chi2_measurable"] = diff_chi2(diff_part_var["best_gen"], data_part_var["gen"], genforcompare, "measurable");
+    diff_diffvals["best_smeared"]["diff_chi2_measurable"] = diff_chi2(diff_part_var["best_smeared"], data_part_var["smeared"], in_2_RC_forcompare, "measurable");
+
+    diff_diffvals["smeared_gen"]["diff_chi2_masses"] = diff_chi2(diff_part_var["smeared_gen"], data_part_var["gen"], genforcompare, "masses");
+    diff_diffvals["best_gen"]["diff_chi2_masses"] = diff_chi2(diff_part_var["best_gen"], data_part_var["gen"], genforcompare, "masses");
+    diff_diffvals["best_smeared"]["diff_chi2_masses"] = diff_chi2(diff_part_var["best_smeared"], data_part_var["smeared"], in_2_RC_forcompare, "masses");
+
+    diff_diffvals["smeared_gen"]["diff_chi2_neutrino"] = diff_chi2(diff_part_var["smeared_gen"], data_part_var["gen"], genforcompare, "neutrino");
+    diff_diffvals["best_gen"]["diff_chi2_neutrino"] = diff_chi2(diff_part_var["best_gen"], data_part_var["gen"], genforcompare, "neutrino");
+    diff_diffvals["best_smeared"]["diff_chi2_neutrino"] = diff_chi2(diff_part_var["best_smeared"], data_part_var["smeared"], in_2_RC_forcompare, "neutrino");
+
+    diff_diffvals["smeared_gen"]["diff_chi2_measurableplusmasses"] = diff_chi2(diff_part_var["smeared_gen"], data_part_var["gen"], genforcompare, "measurableplusmasses");
+    diff_diffvals["best_gen"]["diff_chi2_measurableplusmasses"] = diff_chi2(diff_part_var["best_gen"], data_part_var["gen"], genforcompare, "measurableplusmasses");
+    diff_diffvals["best_smeared"]["diff_chi2_measurableplusmasses"] = diff_chi2(diff_part_var["best_smeared"], data_part_var["smeared"], in_2_RC_forcompare, "measurableplusmasses");
+
+    get_chi2s(result, chisquares);
+
+    push_big("all", result, event_num, vec_diff_part_var, vec_data_part_var, vec_singleint,
+                vec_singledouble, vec_chisquares, vec_diff_diffvals);
+
+    if ( (result.inner_min_status == 0 or result.inner_min_status == 1)
+      and (result.outer_min_status == 0 or result.outer_min_status == 1) ){
+        push_big("converged", result, event_num, vec_diff_part_var, vec_data_part_var, vec_singleint,
+                vec_singledouble, vec_chisquares, vec_diff_diffvals);
+    } else {
+        push_big("failed", result, event_num, vec_diff_part_var, vec_data_part_var, vec_singleint,
+                vec_singledouble, vec_chisquares, vec_diff_diffvals);
+    }
 
 /*    write_big("all", result, event_num, file_diff_part_var, file_data_part_var, file_singleint,
                 file_singledouble, file_chisquares, file_diff_diffvals);
@@ -572,6 +602,21 @@ void analyzer2::single_converter(const double vec[4], dmap2 &dmapp, string partn
 
 }
 
+void analyzer2::get_chi2s(recoc::output& result, dmap1 &dmap)
+{
+    dmap["Bottom_1"] = result.chi2s.b1;
+    dmap["Wd11"] = result.chi2s.d11;
+    dmap["Wd12"] = result.chi2s.d12;
+    dmap["mW1"] = result.chi2s.mw1;
+    dmap["mTop_1"] = result.chi2s.mt1;
+    dmap["Bottom_2"] = result.chi2s.b2;
+    dmap["Wd21"] = result.chi2s.d21;
+    dmap["Wd22"] = result.chi2s.d22;
+    dmap["mW2"] = result.chi2s.mw2;
+    dmap["mTop_2"] = result.chi2s.mt2;
+    dmap["nontops"] = result.chi2s.nontop_objs;
+}
+
 double analyzer2::one_p_chi2(dmap2 &diff, string partname, const double SD[3])
 {
     cout << "starting one_p_chi2" << endl;
@@ -621,7 +666,7 @@ double analyzer2::one_m_chi2(dmap2 &diff, dmap2 &control, string partname, const
     return chi2;
 }
 
-double analyzer2::diff_chi2(dmap2 &diff, dmap2 &control, recoc::output &compare)
+double analyzer2::diff_chi2(dmap2 &diff, dmap2 &control, recoc::output &compare, string which)
 {
     cout << "starting diff_chi2" << endl;
     double b1_chi2 = one_p_chi2(diff, "Bottom_1", compare.SD.b1);
@@ -637,21 +682,30 @@ double analyzer2::diff_chi2(dmap2 &diff, dmap2 &control, recoc::output &compare)
     double mTop1_chi2 = one_m_chi2(diff, control, "Top_1", params.SD_m_t);
     double mTop2_chi2 = one_m_chi2(diff, control, "Top_2", params.SD_m_t);
 
-    double chi2 = b1_chi2 + wd11_chi2 + wd12_chi2 
+    double chi2 = 1.e99;
+    
+    if (strcmp(which.c_str(), "total") == 0){
+        chi2 = b1_chi2 + wd11_chi2 + wd12_chi2 
                     + b2_chi2 + wd21_chi2 + wd22_chi2
                     + bH1_chi2 + bH2_chi2
                     + mW1_chi2 + mW2_chi2 + mTop1_chi2 + mTop2_chi2;
-
-    /*//version without real neutrino
-    double chi2 = b1_chi2 + wd11_chi2 
+    } else if (strcmp(which.c_str(), "measurable") == 0){
+        //version without masses and without real neutrino
+        chi2 = b1_chi2 + wd11_chi2 
+                    + b2_chi2 + wd21_chi2 + wd22_chi2
+                    + bH1_chi2 + bH2_chi2;
+    } else if (strcmp(which.c_str(), "masses") == 0){
+        chi2 = mW1_chi2 + mW2_chi2 + mTop1_chi2 + mTop2_chi2;
+    } else if (strcmp(which.c_str(), "neutrino") == 0){
+        chi2 = wd12_chi2;
+    } else if (strcmp(which.c_str(), "measurableplusmasses") == 0){
+        //version without real neutrino
+        chi2 = b1_chi2 + wd11_chi2 
                     + b2_chi2 + wd21_chi2 + wd22_chi2
                     + bH1_chi2 + bH2_chi2
-                    + mW1_chi2 + mW2_chi2 + mTop1_chi2 + mTop2_chi2;*/
+                    + mW1_chi2 + mW2_chi2 + mTop1_chi2 + mTop2_chi2;
+    }
 
-    /*//version without masses and without real neutrino
-    double chi2 = b1_chi2 + wd11_chi2 
-                    + b2_chi2 + wd21_chi2 + wd22_chi2
-                    + bH1_chi2 + bH2_chi2;*/
     return chi2;
 }
 
@@ -699,6 +753,11 @@ void analyzer2::write_big(string fit_status, recoc::output &result, long unsigne
         const string diff = *d;
         write_diff(diff_part_var[diff], file_diff_part_var[fit_status][diff]);
     }
+
+/*    for (auto d = dataset.begin(); d != dataset.end(); ++d){
+        const string data = *d;
+        write_diff(data_part_var[data], file_data_part_var[fit_status][data]);
+    }*/
 /*    write_diff(diff_part_var["best_gen"], file_diff_part_var[fit_status]["best_gen"];
     write_diff(diff_part_var["smeared_gen"], file_diff_part_var[fit_status]["smeared_gen"]);
     
@@ -720,10 +779,91 @@ void analyzer2::write_big(string fit_status, recoc::output &result, long unsigne
         }
     }
 
+/*    for (auto c = chi2s.begin(); c != chi2s.end(); ++c){
+        const string chi = *c;
+        write_int(chisquares[fits][chi]*/
+
 /*    write_int(diff_diffvals["smeared_gen"]_diffchi2, outfile_smeared_gen_diffchi2_all);
     write_int(best_gen_diffchi2, outfile_best_gen_diffchi2_all);
     write_int(best_smeared_diffchi2, outfile_best_smeared_diffchi2_all);*/
 }
+
+void analyzer2::push_big(string fit_status, recoc::output &result, long unsigned int &event_num,
+                            vdmap4 &vec_diff_part_var, vdmap4 &vec_data_part_var, vimap2 &vec_singleint,
+                            vdmap2 &vec_singledouble, vdmap2 &vec_chisquares, vdmap3 &vec_diff_diffvals)
+{
+
+    for (auto d = datasetdiff.begin(); d != datasetdiff.end(); ++d){
+        const string diff = *d;
+        push_diff(diff_part_var[diff], vec_diff_part_var[fit_status][diff]);
+    }
+
+    for (auto d = dataset.begin(); d != dataset.end(); ++d){
+        const string data = *d;
+        push_diff(data_part_var[data], vec_data_part_var[fit_status][data]);
+    }
+/*    write_diff(diff_part_var["best_gen"], file_diff_part_var[fit_status]["best_gen"];
+    write_diff(diff_part_var["smeared_gen"], file_diff_part_var[fit_status]["smeared_gen"]);
+    
+    write_diff(data_part_var["best"], file_data_part_var[fit_status]["best"]);
+    write_diff(data_part_var["smeared"], file_data_part_var[fit_status]["smeared"]);
+    write_diff(data_part_var["gen"], file_data_part_var[fit_status]["gen"]);*/
+
+    push_int(result.inner_min_status, vec_singleint[fit_status]["inner_status"]);
+    push_int(result.outer_min_status, vec_singleint[fit_status]["outer_status"]);
+    push_int(result.inner_edm, vec_singledouble[fit_status]["inner_edm"]);
+    push_int(result.outer_edm, vec_singledouble[fit_status]["outer_edm"]);
+    push_int(event_num, vec_singleint[fit_status]["event_number"]);
+
+    for (auto d = datasetdiff.begin(); d != datasetdiff.end(); ++d){
+        const string diff = *d;
+        for (auto v = diffvals.begin(); v != diffvals.end(); ++v){
+            const string val = *v;
+            push_int(diff_diffvals[diff][val], vec_diff_diffvals[fit_status][diff][val]);
+        }
+    }
+
+    for (auto c = chi2s.begin(); c != chi2s.end(); ++c){
+        const string chi = *c;
+        push_int(chisquares[chi], vec_chisquares[fit_status][chi]);
+    }
+
+/*    write_int(diff_diffvals["smeared_gen"]_diffchi2, outfile_smeared_gen_diffchi2_all);
+    write_int(best_gen_diffchi2, outfile_best_gen_diffchi2_all);
+    write_int(best_smeared_diffchi2, outfile_best_smeared_diffchi2_all);*/
+}
+
+void analyzer2::push_diff(dmap2 &diff, vdmap2 &vecmap)
+{
+    for (auto p = particles.begin(); p != particles.end(); ++p){
+        const string part = *p;
+        for (auto v = variables.begin(); v != variables.end(); ++v){
+            const string var = *v;
+            (vecmap[part][var]).push_back(diff[part][var]);
+            //cout << "pushing " << part << " " << endl;
+        }
+    }
+
+}
+
+void analyzer2::push_int(int &num, vector<int> &vec)
+{
+    vec.push_back(num);
+}
+
+void analyzer2::push_int(long unsigned int &num, vector<int> &vec)
+{
+    //cout << "inside long unsigned push" << endl;
+    vec.push_back(int(num));
+    //cout << "unsigned vec size = " << vec.size() << endl;
+}
+
+void analyzer2::push_int(double &num, vector<double> &vec)
+{
+    vec.push_back(num);
+}
+
+
 
 void analyzer2::write_diff(dmap2 &diff, fmap2 &outfiles)
 {

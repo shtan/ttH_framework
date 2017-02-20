@@ -43,7 +43,7 @@ void smearer::smear(const vector<pair<int, double *>> &p,
             continue;
         }
         if (id == 13 || id == -13) {
-            smear_(l_res, in_p, 0.101, out_p);
+            smear_givemass_(l_res, in_p, 0.101, out_p);
             continue;
         }
         out_p[0] = in_p[0];
@@ -65,7 +65,11 @@ inline void smearer::smear_(const resolution &res, const double *p,
     if (p[1] < 0)
         phi = PI - phi;
 
-    const double rel_pT_dev = 1 + res.pT * normal(generator);
+    //if (isLep){
+    //    const double rel_pT_dev = 1 + res.pT * normal(generator);
+    //} else {
+        const double rel_pT_dev = 1 + pow(pT, -0.5) * normal(generator);
+    //}
     const double pT_n = pT * rel_pT_dev;
     const double phi_n = phi + res.phi * normal(generator);
     const double eta_n = eta + res.eta * normal(generator);

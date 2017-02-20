@@ -1018,7 +1018,88 @@ double topEventMinimizer::get_outer_edm()
     return bigstruct.outerMin_Edm;
 }
 
-void topEventMinimizer::plot_chis()
+void topEventMinimizer::plot_chi2s()
+{
+    plot_chi2_outer(0, bigstruct.tops.at(0)->vars.b_delta_pt, bigstruct.tops.at(0)->input.b_pt_width,
+                    bigstruct.tops.at(0)->input.b_pt, bigstruct.tops.at(0)->best_outer_params.b_delta_pt,
+                    "Bottom_1_Pt");
+    plot_chi2_outer(0, bigstruct.tops.at(0)->vars.b_delta_phi, bigstruct.tops.at(0)->input.b_phi_width,
+                    bigstruct.tops.at(0)->input.b_phi, bigstruct.tops.at(0)->best_outer_params.b_delta_phi,
+                    "Bottom_1_Phi");
+    plot_chi2_outer(0, bigstruct.tops.at(0)->vars.b_delta_eta, bigstruct.tops.at(0)->input.b_eta_width,
+                    bigstruct.tops.at(0)->input.b_eta, bigstruct.tops.at(0)->best_outer_params.b_delta_eta,
+                    "Bottom_1_Eta");
+
+    plot_chi2_outer(0, bigstruct.tops.at(0)->vars.Wd1_delta_pt, bigstruct.tops.at(0)->input.Wd1_pt_width,
+                    bigstruct.tops.at(0)->input.Wd1_pt, bigstruct.tops.at(0)->best_outer_params.Wd1_delta_pt,
+                    "Wd11_Pt");
+    plot_chi2_outer(0, bigstruct.tops.at(0)->vars.Wd1_delta_phi, bigstruct.tops.at(0)->input.Wd1_phi_width,
+                    bigstruct.tops.at(0)->input.Wd1_phi, bigstruct.tops.at(0)->best_outer_params.Wd1_delta_phi,
+                    "Wd11_Phi");
+    plot_chi2_outer(0, bigstruct.tops.at(0)->vars.Wd1_delta_eta, bigstruct.tops.at(0)->input.Wd1_eta_width,
+                    bigstruct.tops.at(0)->input.Wd1_eta, bigstruct.tops.at(0)->best_outer_params.Wd1_delta_eta,
+                    "Wd11_Eta");
+
+    plot_chi2_outer(1, bigstruct.tops.at(1)->vars.b_delta_pt, bigstruct.tops.at(1)->input.b_pt_width,
+                    bigstruct.tops.at(1)->input.b_pt, bigstruct.tops.at(1)->best_outer_params.b_delta_pt,
+                    "Bottom_2_Pt");
+    plot_chi2_outer(1, bigstruct.tops.at(1)->vars.b_delta_phi, bigstruct.tops.at(1)->input.b_phi_width,
+                    bigstruct.tops.at(1)->input.b_phi, bigstruct.tops.at(1)->best_outer_params.b_delta_phi,
+                    "Bottom_2_Phi");
+    plot_chi2_outer(1, bigstruct.tops.at(1)->vars.b_delta_eta, bigstruct.tops.at(1)->input.b_eta_width,
+                    bigstruct.tops.at(1)->input.b_eta, bigstruct.tops.at(1)->best_outer_params.b_delta_eta,
+                    "Bottom_2_Eta");
+
+    plot_chi2_outer(1, bigstruct.tops.at(1)->vars.Wd1_delta_pt, bigstruct.tops.at(1)->input.Wd1_pt_width,
+                    bigstruct.tops.at(1)->input.Wd1_pt, bigstruct.tops.at(1)->best_outer_params.Wd1_delta_pt,
+                    "Wd21_Pt");
+    plot_chi2_outer(1, bigstruct.tops.at(1)->vars.Wd1_delta_phi, bigstruct.tops.at(1)->input.Wd1_phi_width,
+                    bigstruct.tops.at(1)->input.Wd1_phi, bigstruct.tops.at(1)->best_outer_params.Wd1_delta_phi,
+                    "Wd21_Phi");
+    plot_chi2_outer(1, bigstruct.tops.at(1)->vars.Wd1_delta_eta, bigstruct.tops.at(1)->input.Wd1_eta_width,
+                    bigstruct.tops.at(1)->input.Wd1_eta, bigstruct.tops.at(1)->best_outer_params.Wd1_delta_eta,
+                    "Wd21_Eta");
+
+
+}
+
+void topEventMinimizer::plot_chi2_outer(int iTop, double &delta, const double &width, const double &input, double &best, string name)
+{
+    int n = 600;
+    double spacing = 0.1;
+    double min = -30.;
+    //double max = 30.;
+    //double delt = min;
+    double chi2 = 1.e99;
+    double varplot[n];
+    double chi2plot[n];
+
+    for (int i = 0; i<n; i++){
+        delta = i*spacing + min;
+        chi2 = bigstruct.current_total_outer_chi2();
+        varplot[i] = delta*width + input;
+        chi2plot[i] = chi2;
+        //delt += spacing;
+    }
+
+    setBestValues();
+
+    TCanvas* canvas = new TCanvas("canvas");
+    TGraph *g = new TGraph(n,varplot,chi2plot);
+    g->SetMarkerStyle(2);
+
+    cout << "drawing " << name << endl;
+//    g->Draw("ap");
+    g->GetXaxis()->SetTitle(name.c_str());
+    g->GetYaxis()->SetTitle("total_chi2");
+    g->SetTitle(("Total_chi2 vs " + name).c_str());
+    g->Draw("ap");
+    cout << "after draw" << endl;
+    canvas->Print(("./chi2_plots/chi2_" + name + ".pdf").c_str());
+  
+}
+
+void topEventMinimizer::plot_Wd22_chi2()
 {
     int n = 200;
     double spacing = 0.02;
@@ -1039,6 +1120,8 @@ void topEventMinimizer::plot_chis()
         angl1[i] = i*spacing*pii - pii - pii;
         cout << "thet1 at i = " << i << " = " << thet1[i] << endl;
     }
+
+    setBestValues();
 
     TCanvas* canvas = new TCanvas("canvas");
     TGraph *g = new TGraph(n,angl1,thet1);

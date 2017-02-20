@@ -594,6 +594,11 @@ void ttRC::met_to_neutrino(const double &met_px, const double &met_py, double ne
     LV_to_cyl(neutrino, neu);
 }
 
+inline void Plot_chi2s(topEventMinimizer *ev)
+{
+    ev->plot_chi2s();
+}
+
 inline void Get_results(const input &in, big_struct &bigstruct, topEventMinimizer *ev, output &out)
 {
     out.p.t1_lep = in.p.t1_lep;
@@ -743,6 +748,9 @@ output ttRC::reco(const input &in, const parameters_ttRC &pa)
 
     output res;
     Get_results(in, bs, rc, res);
+
+    //Plot_chi2s(rc);
+
     delete rc;
 
     return res;
