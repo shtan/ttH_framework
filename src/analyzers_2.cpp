@@ -241,6 +241,13 @@ inline void Fill_SDs_(const double p[4], const double unc[3], double SD[3])
     SD[2] = unc[2] * p[2];
 }
 
+inline void Fill_SDs_jet_(const double p[4], const double unc[3], double SD[3])
+{
+    SD[0] = pow( p[0], 0.5 );
+    SD[1] = unc[1] * p[1];
+    SD[2] = unc[2] * p[2];
+}
+
 void Fill_SDs(recoc::input &in)
 {
     cout << "inside Fill_SDs" << endl;
@@ -249,21 +256,21 @@ void Fill_SDs(recoc::input &in)
     const double j_res[3] = {0.1, 0.01, 0.01};  // jet: pT, phi, eta
     const double l_res[3] = {0.01, 0.001, 0.001};   // lepton: pT, phi, eta
     
-    Fill_SDs_(p.b1, j_res, SD.b1);
-    Fill_SDs_(p.b2, j_res, SD.b2);
-    Fill_SDs_(p.bH1, j_res, SD.bH1);
-    Fill_SDs_(p.bH2, j_res, SD.bH2);
+    Fill_SDs_jet_(p.b1, j_res, SD.b1);
+    Fill_SDs_jet_(p.b2, j_res, SD.b2);
+    Fill_SDs_jet_(p.bH1, j_res, SD.bH1);
+    Fill_SDs_jet_(p.bH2, j_res, SD.bH2);
     if (p.t1_lep)
         Fill_SDs_(p.d11, l_res, SD.d11);
     else {
-        Fill_SDs_(p.d11, j_res, SD.d11);
-        Fill_SDs_(p.d12, j_res, SD.d12);
+        Fill_SDs_jet_(p.d11, j_res, SD.d11);
+        Fill_SDs_jet_(p.d12, j_res, SD.d12);
     }
     if (p.t2_lep)
         Fill_SDs_(p.d21, l_res, SD.d21);
     else {
-        Fill_SDs_(p.d21, j_res, SD.d21);
-        Fill_SDs_(p.d22, j_res, SD.d22);
+        Fill_SDs_jet_(p.d21, j_res, SD.d21);
+        Fill_SDs_jet_(p.d22, j_res, SD.d22);
     }
     
 //    if (p.p_others.size() == 0)
@@ -273,7 +280,7 @@ void Fill_SDs(recoc::input &in)
     auto it2 = SD.p_others.begin();
     const auto end = p.p_others.end();
     while (it1 != end) {
-        Fill_SDs_(*it1, j_res, *it2);
+        Fill_SDs_jet_(*it1, j_res, *it2);
     }
 
     cout << "after original" << endl;

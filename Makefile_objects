@@ -8,7 +8,7 @@ objects=src/LHEF_lite.o \
 
 objects1=src/analyzers_1.o
 
-objects2=src/analyzers_2.o
+objects2=src/analyzers_2.o src/scatter_plotter.o
 
 objects2p1=src/analyzers_1.o src/analyzers_2p1.o
 

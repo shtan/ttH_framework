@@ -7,6 +7,7 @@
 #include "LHEF_lite.h"
 #include "analyzers_2.h"
 #include "maps.h"
+#include "scatter_plotter.h"
 
 #include <TH1D.h>
 #include <TGraph.h>
@@ -27,6 +28,7 @@ void close_file(ofstream&);
 void scatter_plot(vector<double>&, vector<double>&, string);
 void scatter_plot_m(vector<double>&, vector<double>&, vector<double>&, string);
 void read_files();
+void plot();
 vector<string> particles;
 vector<string> variables;
 vector<string> fitstatus;
@@ -106,11 +108,13 @@ int main(int argc, char* argv[])
 
     read_files();
 
+    plot();
+
     //scatter_plot(vec_singledouble["converged"]["outer_edm"], vec_diff_diffvals["converged"]["best_gen"]["diff_chi2_total"], "./scatterplots/20170220/diffchi2_total_edm_converged_test.pdf");
 
     //scatter_plot_m(vec_singledouble["converged"]["outer_edm"], vec_diff_diffvals["converged"]["best_gen"]["diff_chi2_total"], vec_diff_diffvals["converged"]["smeared_gen"]["diff_chi2_total"], "./scatterplots/20170220/diffchi2_total_minus_edm_converged.pdf");
 
-    scatter_plot_m(vec_singledouble["converged"]["outer_edm"], vec_diff_part_var["converged"]["best_gen"]["Top_1"]["M"], vec_diff_part_var["converged"]["smeared_gen"]["Top_1"]["M"], "./scatterplots/20170220/diffchi2_total_minus_edm_converged.pdf");
+    //scatter_plot_m(vec_singledouble["converged"]["outer_edm"], vec_diff_part_var["converged"]["best_gen"]["Top_1"]["M"], vec_diff_part_var["converged"]["smeared_gen"]["Top_1"]["M"], "./scatterplots/20170220/diffchi2_total_minus_edm_converged.pdf");
 
     /*cout << "before blah" << endl;
         ROOT::Math::Minimizer *blah = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Minimize");
@@ -892,6 +896,109 @@ void scatter_plot_m(vector<double> &vecx, vector<double> &vecy1, vector<double> 
     cout << "after print" << endl;
 
 }
+
+void plot()
+{
+
+    /*for (auto v = (vec_data_part_var["converged"]["gen"]["Wd22"]["Pt"]).begin(); v != (vec_data_part_var["converged"]["gen"]["Wd22"]["Pt"]).end();v++){
+        cout << *v << endl;
+    }*/
+
+
+    string plotpath = "./scatterplots/20170220/goodbad/";
+    string ypart, yvar;
+/*
+//    for (auto fs = fitstatus.begin(); fs != fitstatus.end(); ++fs){
+//        const string fits = *fs;
+//        for (auto d = datasetdiff.begin(); d != datasetdiff.end(); ++d){
+//            const string diff = *d;
+            for (auto p = particles.begin(); p != particles.end(); ++p){
+                const string part = *p;
+                for (auto v = variables.begin(); v != variables.end(); ++v){
+                    const string var = *v;
+                    plotter::plotter plot;
+                        plot.good_bad(vec_singledouble["converged"]["outer_edm"], 
+                                vec_diff_part_var["converged"]["best_gen"][part][var],
+                                vec_diff_part_var["converged"]["smeared_gen"][part][var],
+                                plotpath + part + "_" + var + ".pdf",
+                                part + "_" + var + ", converged",
+                                "Log10(outer_edm)");
+                }
+            }
+//        }
+//    }*/
+
+    plotpath = "./scatterplots/20170221/features_data/";
+    ypart = "Top_1";
+    yvar = "M";
+    for (auto p = particles.begin(); p != particles.end(); ++p){
+        const string part = *p;
+        for (auto v = variables.begin(); v != variables.end(); ++v){
+            const string var = *v;
+            plotter::plotter plot;
+                plot.good_bad(vec_data_part_var["converged"]["gen"][part][var], 
+                        vec_diff_part_var["converged"]["best_gen"][ypart][yvar],
+                        vec_diff_part_var["converged"]["smeared_gen"][ypart][yvar],
+                        plotpath + "Performance_" + ypart + "_" + yvar + "_vs_" + part + "_" + var + ".pdf",
+                        ypart + "_" + yvar + ", converged",
+                        part + "_" + var + "_gen");
+        }
+    }
+ 
+    plotpath = "./scatterplots/20170221/features_data2/";
+    ypart = "Wd12";
+    yvar = "Eta";
+    for (auto p = particles.begin(); p != particles.end(); ++p){
+        const string part = *p;
+        for (auto v = variables.begin(); v != variables.end(); ++v){
+            const string var = *v;
+            plotter::plotter plot;
+                plot.good_bad(vec_data_part_var["converged"]["gen"][part][var], 
+                        vec_diff_part_var["converged"]["best_gen"][ypart][yvar],
+                        vec_diff_part_var["converged"]["smeared_gen"][ypart][yvar],
+                        plotpath + "Performance_" + ypart + "_" + yvar + "_vs_" + part + "_" + var + ".pdf",
+                        ypart + "_" + yvar + ", converged",
+                        part + "_" + var + "_gen");
+        }
+    }
+ 
+    plotpath = "./scatterplots/20170221/features_data_smeared/";
+    ypart = "Top_1";
+    yvar = "M";
+    for (auto p = particles.begin(); p != particles.end(); ++p){
+        const string part = *p;
+        for (auto v = variables.begin(); v != variables.end(); ++v){
+            const string var = *v;
+            plotter::plotter plot;
+                plot.good_bad(vec_data_part_var["converged"]["smeared"][part][var], 
+                        vec_diff_part_var["converged"]["best_gen"][ypart][yvar],
+                        vec_diff_part_var["converged"]["smeared_gen"][ypart][yvar],
+                        plotpath + "Performance_" + ypart + "_" + yvar + "_vs_" + part + "_" + var + ".pdf",
+                        ypart + "_" + yvar + ", converged",
+                        part + "_" + var + "_smeared");
+        }
+    }
+ 
+    plotpath = "./scatterplots/20170221/features_data_smeared2/";
+    ypart = "Wd12";
+    yvar = "Eta";
+    for (auto p = particles.begin(); p != particles.end(); ++p){
+        const string part = *p;
+        for (auto v = variables.begin(); v != variables.end(); ++v){
+            const string var = *v;
+            plotter::plotter plot;
+                plot.good_bad(vec_data_part_var["converged"]["smeared"][part][var], 
+                        vec_diff_part_var["converged"]["best_gen"][ypart][yvar],
+                        vec_diff_part_var["converged"]["smeared_gen"][ypart][yvar],
+                        plotpath + "Performance_" + ypart + "_" + yvar + "_vs_" + part + "_" + var + ".pdf",
+                        ypart + "_" + yvar + ", converged",
+                        part + "_" + var + "_smeared");
+        }
+    }
+ 
+
+}
+
 
 /*void open_files( fmap2 &outfiles, string prefix, string path_suffix )
 {
