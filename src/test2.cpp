@@ -106,9 +106,9 @@ int main(int argc, char* argv[])
     //open_files_new(path_suffix);
     initialise_vecs();
 
-    read_files();
+//    read_files();
 
-    plot();
+//    plot();
 
     //scatter_plot(vec_singledouble["converged"]["outer_edm"], vec_diff_diffvals["converged"]["best_gen"]["diff_chi2_total"], "./scatterplots/20170220/diffchi2_total_edm_converged_test.pdf");
 
@@ -217,7 +217,7 @@ int main(int argc, char* argv[])
     //ofstream outfile;
     //outfile.open ( "./results/fit_output.txt" );*/
 
-/*    ex1::analyzer2 a;
+    ex1::analyzer2 a;
    for (unsigned long int0 = 0; int0 < neve; int0++){
         reader.Get_event_GM(p, moth_ID);
         a.smear_only(p);
@@ -231,7 +231,7 @@ int main(int argc, char* argv[])
 
         a.analz(p, moth_ID, neve, vec_diff_part_var, vec_data_part_var, vec_singleint,
                 vec_singledouble, vec_chisquares, vec_diff_diffvals);
-*/
+
         /*a.analz(p, moth_ID, neve, file_diff_part_var, file_data_part_var, file_singleint,
                 file_singledouble, file_chisquares, file_diff_diffvals);*/
 
@@ -253,11 +253,11 @@ int main(int argc, char* argv[])
                 outfile_smeared_gen_diffchi2_failed, outfile_best_gen_diffchi2_failed, outfile_best_smeared_diffchi2_failed
                 );*/
         //cout << "exited analz" << endl;
-/*    ++neve;
-    }*/
+    ++neve;
+    }
 
     //close_files_new();
-//    write_vecs(path_suffix);
+    write_vecs(path_suffix);
 
     /*cout << "before close files" << endl;
 
@@ -392,7 +392,7 @@ void initialise_vecs()
 void write_vecs( string path_suffix)
 {
     //string bigpath = path + path_suffix + "/";
-    string bigpath = "/afs/cern.ch/work/s/shtan/private/topreco_20161213/20170220/smear_change/" + path_suffix + "/";
+    string bigpath = "/afs/cern.ch/work/s/shtan/private/topreco_20161213/20170405/lots_of_events/" + path_suffix + "/";
     //outpath = "/afs/cern.ch/user/s/shtan/teststorage/";
 
     //fmap outfiles;
