@@ -82,6 +82,7 @@ int main(int argc, char* argv[])
                 "diff_chi2_measurableplusmasses", "diff_chi2_total"};
 
     LHEF_lite reader("ttbb_h_bbbbdue.lhe");
+    //LHEF_lite reader("ttbb_h_bbbbdue_10.lhe");
 
     unsigned long neve = atoi(argv[1]);
     unsigned long max_ev = atoi(argv[2]) + 1;
@@ -392,7 +393,7 @@ void initialise_vecs()
 void write_vecs( string path_suffix)
 {
     //string bigpath = path + path_suffix + "/";
-    string bigpath = "/afs/cern.ch/work/s/shtan/private/topreco_20161213/20170405/lots_of_events/" + path_suffix + "/";
+    string bigpath = "/afs/cern.ch/work/s/shtan/private/topreco_20161213/20170703/test/" + path_suffix + "/";
     //outpath = "/afs/cern.ch/user/s/shtan/teststorage/";
 
     //fmap outfiles;

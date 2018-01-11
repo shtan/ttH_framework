@@ -1,0 +1,8 @@
+# General
+*.o
+core.*
+*.pdf
+
+# Output files
+results/
+chi2_plots/

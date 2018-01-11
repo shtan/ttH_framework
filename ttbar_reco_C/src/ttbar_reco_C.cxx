@@ -105,6 +105,9 @@ void Print(const input &in)
     for (auto p : in.p.p_others)
         cout << "p_others: " << p[0] << " " << p[1] << " " << p[2] << " "
              << p[3] << endl;
+
+    cout << in.MET_px << endl;
+    cout << in.MET_py << endl;
 }
 
 void Print(const output &in)

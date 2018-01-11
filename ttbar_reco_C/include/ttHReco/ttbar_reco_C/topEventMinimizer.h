@@ -29,6 +29,8 @@ class topEventMinimizer
     ROOT::Math::Minimizer *innerMin_;
     ROOT::Math::Minimizer *outerMin_;
 
+    int iterrr;
+
     //DON'T DELETE THIS
     //bool checkInputSizes();
 

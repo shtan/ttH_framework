@@ -175,7 +175,7 @@ void topEventMinimizer::calcWDaughterEllipses()
 void topEventMinimizer::findStartingValues(int nPoints)
 {
     //if (debug_verbosity >= 2)
-        //cout << "find Starting Values" << endl;
+    //    cout << "find Starting Values" << endl;
     // cout << "Determining starting values for the ellipse angles and top mass
     // deltas" << endl;
 
@@ -256,6 +256,8 @@ void topEventMinimizer::findStartingValues(int nPoints)
 double topEventMinimizer::innerMinimizationOperator(const double *inputDeltas)
 {
      //cout<<"at innermin operator"<<endl;
+     //cout << "iteration " << iterrr << endl;
+     iterrr++;
     // printTopConstituents();
 //    vector<double> ellipseAnglesCurrent;
 //    vector<double> topMassDeltasCurrent;
@@ -331,12 +333,14 @@ double topEventMinimizer::innerMinimizationOperator(const double *inputDeltas)
     //cout << "end innermin operator" << endl;
 
     //return innerChi2;
+    //cout << bigstruct.current_total_inner_chi2() << endl;
+    //cout << innerMin_->Edm() << endl;
     return bigstruct.current_total_inner_chi2();
 }
 
 void topEventMinimizer::minimizeNonTopChiSquare()
 {
-    // cout << "Doing inner minimization" << endl;
+     //cout << "Doing inner minimization" << endl;
 
     //if (debug_verbosity >= 2)
         //cout << "minimizeNonTopChiSquare" << endl;
@@ -469,15 +473,17 @@ void topEventMinimizer::minimizeNonTopChiSquare()
     //innerMin_->FixVariable(2);
 //    innerMin_->FixVariable(3);
 
+    //cout << "before innerMin Minimize" << endl;
+    iterrr = 0;
     innerMin_->Minimize();
-    //cout << "end nontopchisquare" << endl;
+    //cout << "end innerMin operator" << endl;
 
 
 }
 
 double topEventMinimizer::outerMinimizationOperator(const double *inputDeltas)
 {
-    // std::cout << "at outermin"<<std::endl;
+     //std::cout << "at outermin"<<std::endl;
     // printTopConstituents();
     // reset the inner chi^2 minimum for this outer minimizer step
 
@@ -497,6 +503,13 @@ double topEventMinimizer::outerMinimizationOperator(const double *inputDeltas)
         bigstruct.tops.at(iTop)->vars.Wd1_delta_phi = inputDeltas[i+4];
         bigstruct.tops.at(iTop)->vars.Wd1_delta_eta = inputDeltas[i+5];
         bigstruct.tops.at(iTop)->vars.delta_mW = inputDeltas[i+6];
+        /*cout << inputDeltas[i] << endl;
+        cout << inputDeltas[i+1] << endl;
+        cout << inputDeltas[i+2] << endl;
+        cout << inputDeltas[i+3] << endl;
+        cout << inputDeltas[i+4] << endl;
+        cout << inputDeltas[i+5] << endl;
+        cout << inputDeltas[i+6] << endl;*/
         i += 7;
 
         /*cout << "iTop = " << iTop << endl;
@@ -576,13 +589,21 @@ double topEventMinimizer::outerMinimizationOperator(const double *inputDeltas)
     bigstruct.last_total_outer_chi2 = bigstruct.current_total_outer_chi2();
 
     //cout << "current total outer chi2 = " << bigstruct.current_total_outer_chi2() << endl;
+    //cout << "theta0 = " << bigstruct.tops.at(0)->best_outer_params.theta << endl;
+    //cout << "theta1 = " << bigstruct.tops.at(1)->best_outer_params.theta << endl;
+    //cout << "deltaMt0 = " << bigstruct.tops.at(0)->best_outer_params.delta_mTop << endl;
+    //cout << "deltaMt1 = " << bigstruct.tops.at(1)->best_outer_params.delta_mTop << endl;
+    double innerchi2toprint = nontops.best_outer_params.chi2 + bigstruct.tops.at(0)->best_outer_params.Wd2_chi2 + bigstruct.tops.at(1)->best_outer_params.Wd2_chi2 + bigstruct.tops.at(0)->best_outer_params.mTop_chi2 + bigstruct.tops.at(1)->best_outer_params.mTop_chi2;
+    //cout << "inner chi2 = " << innerchi2toprint << endl;
+
+    //cout << "end outermin" << endl;
     return bigstruct.current_total_outer_chi2();
 }
 
 void topEventMinimizer::minimizeTotalChiSquare()
 {
     //if (debug_verbosity >= 2){
-        cout << "minimizeTotalChiSquare" << endl;
+        //cout << "minimizeTotalChiSquare" << endl;
         //printTopConstituents();
         //printNonTopObjects();
     //}
