@@ -393,7 +393,7 @@ void initialise_vecs()
 void write_vecs( string path_suffix)
 {
     //string bigpath = path + path_suffix + "/";
-    string bigpath = "/afs/cern.ch/work/s/shtan/private/topreco_20161213/20170703/test/" + path_suffix + "/";
+    string bigpath = "/afs/cern.ch/work/s/shtan/private/topreco_20161213/20180112/nonexisting" + path_suffix + "/";
     //outpath = "/afs/cern.ch/user/s/shtan/teststorage/";
 
     //fmap outfiles;

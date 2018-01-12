@@ -1,0 +1,3 @@
+[submodule "MEKD"]
+	path = MEKD
+	url = git@github.com:odysei/MEKD.git
