@@ -4,6 +4,8 @@
 #include <fstream>
 #include <vector>
 #include <map>
+#include <TH1D.h>
+#include <TCanvas.h>
 
 using namespace std;
 
@@ -25,6 +27,9 @@ extern vector<string> singleints;
 extern vector<string> singledoubles;
 extern vector<string> chi2s;
 extern vector<string> diffvals;
+extern vector<string> variablesCar;
+extern vector<string> variablesH;
+extern vector<string> variablesT;
 //double blah;
 
 typedef map<string, double> dmap1;
@@ -48,6 +53,15 @@ typedef map<string, vdmap3> vdmap4;
 
 typedef map<string, vector<int> > vimap1;
 typedef map<string, vimap1> vimap2;
+
+typedef map<string, TH1D *> hmap1;
+typedef map<string, hmap1> hmap2;
+typedef map<string, hmap2> hmap3;
+typedef map<string, hmap3> hmap4;
+
+typedef map<string, TCanvas*> cmap1;
+typedef map<string, cmap1> cmap2;
+typedef map<string, cmap2> cmap3;
 
 //}
 
