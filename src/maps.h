@@ -30,16 +30,12 @@ extern vector<string> diffvals;
 extern vector<string> variablesCar;
 extern vector<string> variablesH;
 extern vector<string> variablesT;
-//double blah;
 
 typedef map<string, double> dmap1;
 typedef map<string, dmap1> dmap2;
 typedef map<string, dmap2> dmap3;
 
 typedef map<string, int> imap1;
-
-//dmap2 best_gen;
-//dmap2 smeared_gen;
 
 typedef map<string, ofstream*> fmap1;
 typedef map<string, fmap1> fmap2;

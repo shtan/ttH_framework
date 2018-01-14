@@ -39,21 +39,8 @@ analyzer2::~analyzer2()
         delete i.second;
 }
 
-/*
- * analyzer2::analz() block
- * 
- */
-
 void analyzer2::Setup_Maps()
 {
-/*    for (auto p = particles.begin(); p != particles.end(); ++p){
-        const string part = *p;
-        for (auto v = variables.begin(); v != variables.end(); ++v){
-            const string var = *v;
-            best_gen[part][var] = 0.0;
-            smeared_gen[part][var] = 0.0;
-        }
-    }*/
     for (auto d = datasetdiff.begin(); d != datasetdiff.end(); ++d){
         const string diff = *d;
         for (auto p = particles.begin(); p != particles.end(); ++p){
@@ -327,22 +314,6 @@ void analyzer2::smear_only(const pvec &p)
 void analyzer2::analz(const pvec &p, const movec &moth_ID, long unsigned int &event_num,
                         vdmap4 &vec_diff_part_var, vdmap4 &vec_data_part_var, vimap2 &vec_singleint,
                         vdmap2 &vec_singledouble, vdmap2 &vec_chisquares, vdmap3 &vec_diff_diffvals)
-/*void analyzer2::analz(const pvec &p, const movec &moth_ID, long unsigned int &event_num, fmap2 &outfiles_best_gen_all, fmap2 &outfiles_smeared_gen_all,
-                        fmap2 &outfiles_best_gen_converged, fmap2 &outfiles_smeared_gen_converged,
-                        fmap2 &outfiles_best_gen_failed, fmap2 &outfiles_smeared_gen_failed,
-                        fmap2 &outfiles_best_all, fmap2 &outfiles_smeared_all, fmap2 &outfiles_gen_all,
-                        ofstream &outfile_inner_status_all, ofstream &outfile_outer_status_all, ofstream &outfile_event_number_all,
-                        ofstream &outfile_inner_edm_all, ofstream &outfile_outer_edm_all,
-                        fmap2 &outfiles_best_converged, fmap2 &outfiles_smeared_converged, fmap2 &outfiles_gen_converged,
-                        ofstream &outfile_inner_status_converged, ofstream &outfile_outer_status_converged, ofstream &outfile_event_number_converged,
-                        ofstream &outfile_inner_edm_converged, ofstream &outfile_outer_edm_converged,
-                        fmap2 &outfiles_best_failed, fmap2 &outfiles_smeared_failed, fmap2 &outfiles_gen_failed,
-                        ofstream &outfile_inner_status_failed, ofstream &outfile_outer_status_failed, ofstream &outfile_event_number_failed,
-                        ofstream &outfile_inner_edm_failed, ofstream &outfile_outer_edm_failed,
-                        ofstream &outfile_smeared_gen_diffchi2_all, ofstream &outfile_best_gen_diffchi2_all, ofstream &outfile_best_smeared_diffchi2_all,
-                        ofstream &outfile_smeared_gen_diffchi2_converged, ofstream &outfile_best_gen_diffchi2_converged, ofstream &outfile_best_smeared_diffchi2_converged,
-                        ofstream &outfile_smeared_gen_diffchi2_failed, ofstream &outfile_best_gen_diffchi2_failed, ofstream &outfile_best_smeared_diffchi2_failed
-                        )*/
 {
     smr.smear(p, ps);
     ttbarX ttX = ident.identify(ex1::ttH_SL_bx, p, moth_ID);
@@ -456,83 +427,10 @@ cout << "result" << endl;
                 vec_singledouble, vec_chisquares, vec_diff_diffvals);
     }
 
-/*    write_big("all", result, event_num, file_diff_part_var, file_data_part_var, file_singleint,
-                file_singledouble, file_chisquares, file_diff_diffvals);
-
-    if ( (result.inner_min_status == 0 or result.inner_min_status == 1)
-      and (result.outer_min_status == 0 or result.outer_min_status == 1) ){
-        write_big("converged", result, event_num, file_diff_part_var, file_data_part_var, file_singleint,
-                file_singledouble, file_chisquares, file_diff_diffvals);
-    } else {
-        write_big("failed", result, event_num, file_diff_part_var, file_data_part_var, file_singleint,
-                file_singledouble, file_chisquares, file_diff_diffvals);
-    }*/
-
-
-/*    cout << "out here!" << endl;
-    write_diff(best_gen, outfiles_best_gen_all);
-    write_diff(smeared_gen, outfiles_smeared_gen_all);
-
-    write_diff(best, outfiles_best_all);
-    write_diff(smeared, outfiles_smeared_all);
-    write_diff(gen, outfiles_gen_all);
-    write_int(result.inner_min_status, outfile_inner_status_all);
-    write_int(result.outer_min_status, outfile_outer_status_all);
-    write_int(result.inner_edm, outfile_inner_edm_all);
-    write_int(result.outer_edm, outfile_outer_edm_all);
-    write_int(event_num, outfile_event_number_all);
-    cout << "before write new" << endl;
-    write_int(smeared_gen_diffchi2, outfile_smeared_gen_diffchi2_all);
-    cout << "after first write new" << endl;
-    write_int(best_gen_diffchi2, outfile_best_gen_diffchi2_all);
-    write_int(best_smeared_diffchi2, outfile_best_smeared_diffchi2_all);
-    cout << "after third write new" << endl;
-
-    if ( (result.inner_min_status == 0 or result.inner_min_status == 1)
-      and (result.outer_min_status == 0 or result.outer_min_status == 1) ){
-        write_diff(best_gen, outfiles_best_gen_converged);
-        write_diff(smeared_gen, outfiles_smeared_gen_converged);
-        write_diff(best, outfiles_best_converged);
-        write_diff(smeared, outfiles_smeared_converged);
-        write_diff(gen, outfiles_gen_converged);
-        write_int(result.inner_min_status, outfile_inner_status_converged);
-        write_int(result.outer_min_status, outfile_outer_status_converged);
-        write_int(result.inner_edm, outfile_inner_edm_converged);
-        write_int(result.outer_edm, outfile_outer_edm_converged);
-        write_int(event_num, outfile_event_number_converged);
-        write_int(smeared_gen_diffchi2, outfile_smeared_gen_diffchi2_converged);
-        write_int(best_gen_diffchi2, outfile_best_gen_diffchi2_converged);
-        write_int(best_smeared_diffchi2, outfile_best_smeared_diffchi2_converged);
-    } else {
-        write_diff(best_gen, outfiles_best_gen_failed);
-        write_diff(smeared_gen, outfiles_smeared_gen_failed);
-        write_diff(best, outfiles_best_failed);
-        write_diff(smeared, outfiles_smeared_failed);
-        write_diff(gen, outfiles_gen_failed);
-        write_int(result.inner_min_status, outfile_inner_status_failed);
-        write_int(result.outer_min_status, outfile_outer_status_failed);
-        write_int(result.inner_edm, outfile_inner_edm_failed);
-        write_int(result.outer_edm, outfile_outer_edm_failed);
-        write_int(event_num, outfile_event_number_failed);
-        write_int(smeared_gen_diffchi2, outfile_smeared_gen_diffchi2_failed);
-        write_int(best_gen_diffchi2, outfile_best_gen_diffchi2_failed);
-        write_int(best_smeared_diffchi2, outfile_best_smeared_diffchi2_failed);
-    }
-
-   cout << "after all write" << endl; */
-
-
     for (auto array : result.p.p_others)
         delete array;
     cout << "after delete" << endl;
 }
-
-/*void analyzer2::input_to_output(const recoc::input &in, recoc::output &out)
-{
-    out.p = in.p;
-    recoc::daughter_to_parents(in.p, out.parents_p);
-}*/
-
 
 
 void analyzer2::calc_diff(const recoc::output &out1, const recoc::output &out2, dmap2 &diff)
@@ -578,7 +476,7 @@ void analyzer2::dmap2_converter(const recoc::output &out, dmap2 &dmapp)
 
 void analyzer2::principal_angle(double &theta)
 {
-    cout << "theta = " << theta << endl;
+    //cout << "theta = " << theta << endl;
     double pii = 3.14159265359;
     while (theta > pii){
         theta -= 2*pii;
@@ -586,7 +484,7 @@ void analyzer2::principal_angle(double &theta)
     while (theta < -pii){
         theta += 2*pii;
     }
-    cout << "new theta = " << theta << endl;
+    //cout << "new theta = " << theta << endl;
 }
 
 void analyzer2::single_converter(const double vec[4], dmap2 &dmapp, string partname)
@@ -605,7 +503,7 @@ void analyzer2::single_converter(const double vec[4], dmap2 &dmapp, string partn
     lv.SetPtEtaPhiE(vec[0], vec[2], vec[1], vec[3]);
 
     dmapp[partname]["M"] = lv.M();
-    cout << "blub " << partname << " " << lv.M() << endl;
+    //cout << "blub " << partname << " " << lv.M() << endl;
 
 }
 
@@ -626,25 +524,25 @@ void analyzer2::get_chi2s(recoc::output& result, dmap1 &dmap)
 
 double analyzer2::one_p_chi2(dmap2 &diff, string partname, const double SD[3])
 {
-    cout << "starting one_p_chi2" << endl;
-    cout << partname << endl;
+    //cout << "starting one_p_chi2" << endl;
+    //cout << partname << endl;
     double pt = diff[partname]["Pt"];
     double phi = diff[partname]["Phi"];
     double eta = diff[partname]["Eta"];
     double SD_pt = SD[0];
     double SD_phi = SD[1];
     double SD_eta = SD[2];
-    cout << "SD" << endl;
-    cout << SD_pt << endl;
-    cout << SD_phi << endl;
-    cout << SD_eta << endl;
-    cout << "P" << endl;
-    cout << pt << endl;
-    cout << phi << endl;
-    cout << eta << endl;
+    //cout << "SD" << endl;
+    //cout << SD_pt << endl;
+    //cout << SD_phi << endl;
+    //cout << SD_eta << endl;
+    //cout << "P" << endl;
+    //cout << pt << endl;
+    //cout << phi << endl;
+    //cout << eta << endl;
 
     double chi2 = pow( pt/SD_pt, 2) + pow( phi/SD_phi, 2) + pow( eta/SD_eta, 2);
-    cout << "chi2 = " << chi2 << endl;
+    //cout << "chi2 = " << chi2 << endl;
 
     return chi2;
 }
@@ -652,7 +550,7 @@ double analyzer2::one_p_chi2(dmap2 &diff, string partname, const double SD[3])
 //Define breitWigner function to calculate mTop and mW chi2
 double analyzer2::breitWignerErr(const double &mass, const double &width, const double &deltaMass)
 {
-    cout << "in breitwigner" << endl;
+    //cout << "in breitwigner" << endl;
     double scaledDeltaMass = deltaMass * width;
     double scaledDeltaMass2 = scaledDeltaMass * scaledDeltaMass;
     double Zscore = ROOT::Math::normal_quantile(
@@ -664,18 +562,18 @@ double analyzer2::breitWignerErr(const double &mass, const double &width, const 
 
 double analyzer2::one_m_chi2(dmap2 &diff, dmap2 &control, string partname, const double width)
 {
-    cout << "starting one_m_chi2"<< endl;
-    cout << partname << endl;
+    //cout << "starting one_m_chi2"<< endl;
+    //cout << partname << endl;
     double control_mass = control[partname]["M"];
     double mass_diff = diff[partname]["M"];
     double chi2 = breitWignerErr(control_mass, width, mass_diff);
-    cout << "chi2 = " << chi2 << endl;
+    //cout << "chi2 = " << chi2 << endl;
     return chi2;
 }
 
 double analyzer2::diff_chi2(dmap2 &diff, dmap2 &control, recoc::output &compare, string which)
 {
-    cout << "starting diff_chi2" << endl;
+    //cout << "starting diff_chi2" << endl;
     double b1_chi2 = one_p_chi2(diff, "Bottom_1", compare.SD.b1);
     double wd11_chi2 = one_p_chi2(diff, "Wd11", compare.SD.d11);
     double wd12_chi2 = one_p_chi2(diff, "Wd12", compare.SD.d12);
@@ -738,7 +636,7 @@ void analyzer2::one_diff(const double vec1[4], const double vec2[4], dmap2 &diff
 
     diff[partname]["M"] = lv1.M() - lv2.M();
 
-    cout << "partname = " << partname << endl;
+    /*cout << "partname = " << partname << endl;
     cout << "Pt " << vec1[0] << " " << vec2[0] << endl;
     cout << "Phi " << vec1[1] << " " << vec2[1] << endl;
     cout << "Eta " << vec1[2] << " " << vec2[2] << endl;
@@ -747,7 +645,7 @@ void analyzer2::one_diff(const double vec1[4], const double vec2[4], dmap2 &diff
     cout << "Pz " << lv1.Pz() << " " << lv2.Pz() << endl;
     cout << "E " << lv1.E() << " " << lv2.E() << endl;
     cout << "lv1 mass = " << lv1.M() << endl;
-    cout << "lv2 mass = " << lv2.M() << endl;
+    cout << "lv2 mass = " << lv2.M() << endl;*/
 
 }
 
@@ -760,17 +658,6 @@ void analyzer2::write_big(string fit_status, recoc::output &result, long unsigne
         const string diff = *d;
         write_diff(diff_part_var[diff], file_diff_part_var[fit_status][diff]);
     }
-
-/*    for (auto d = dataset.begin(); d != dataset.end(); ++d){
-        const string data = *d;
-        write_diff(data_part_var[data], file_data_part_var[fit_status][data]);
-    }*/
-/*    write_diff(diff_part_var["best_gen"], file_diff_part_var[fit_status]["best_gen"];
-    write_diff(diff_part_var["smeared_gen"], file_diff_part_var[fit_status]["smeared_gen"]);
-    
-    write_diff(data_part_var["best"], file_data_part_var[fit_status]["best"]);
-    write_diff(data_part_var["smeared"], file_data_part_var[fit_status]["smeared"]);
-    write_diff(data_part_var["gen"], file_data_part_var[fit_status]["gen"]);*/
 
     write_int(result.inner_min_status, file_singleint[fit_status]["inner_status"]);
     write_int(result.outer_min_status, file_singleint[fit_status]["outer_status"]);
@@ -786,13 +673,6 @@ void analyzer2::write_big(string fit_status, recoc::output &result, long unsigne
         }
     }
 
-/*    for (auto c = chi2s.begin(); c != chi2s.end(); ++c){
-        const string chi = *c;
-        write_int(chisquares[fits][chi]*/
-
-/*    write_int(diff_diffvals["smeared_gen"]_diffchi2, outfile_smeared_gen_diffchi2_all);
-    write_int(best_gen_diffchi2, outfile_best_gen_diffchi2_all);
-    write_int(best_smeared_diffchi2, outfile_best_smeared_diffchi2_all);*/
 }
 
 void analyzer2::push_big(string fit_status, recoc::output &result, long unsigned int &event_num,
@@ -809,12 +689,6 @@ void analyzer2::push_big(string fit_status, recoc::output &result, long unsigned
         const string data = *d;
         push_diff(data_part_var[data], vec_data_part_var[fit_status][data]);
     }
-/*    write_diff(diff_part_var["best_gen"], file_diff_part_var[fit_status]["best_gen"];
-    write_diff(diff_part_var["smeared_gen"], file_diff_part_var[fit_status]["smeared_gen"]);
-    
-    write_diff(data_part_var["best"], file_data_part_var[fit_status]["best"]);
-    write_diff(data_part_var["smeared"], file_data_part_var[fit_status]["smeared"]);
-    write_diff(data_part_var["gen"], file_data_part_var[fit_status]["gen"]);*/
 
     push_int(result.inner_min_status, vec_singleint[fit_status]["inner_status"]);
     push_int(result.outer_min_status, vec_singleint[fit_status]["outer_status"]);
@@ -835,9 +709,6 @@ void analyzer2::push_big(string fit_status, recoc::output &result, long unsigned
         push_int(chisquares[chi], vec_chisquares[fit_status][chi]);
     }
 
-/*    write_int(diff_diffvals["smeared_gen"]_diffchi2, outfile_smeared_gen_diffchi2_all);
-    write_int(best_gen_diffchi2, outfile_best_gen_diffchi2_all);
-    write_int(best_smeared_diffchi2, outfile_best_smeared_diffchi2_all);*/
 }
 
 void analyzer2::push_diff(dmap2 &diff, vdmap2 &vecmap)

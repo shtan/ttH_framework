@@ -21,22 +21,22 @@ topEventMinimizer::topEventMinimizer(big_struct & bigstructure, int& debug)
 
     //nonTopChiSquare_.setupEquations();
     Initialize_minimizers(outerMin_, innerMin_);
-    cout << "initialised minimizers" << endl;
+    //cout << "initialised minimizers" << endl;
 
     initialize_best_outer_chiSquares();
-    cout << "initialised chis" << endl;
+    //cout << "initialised chis" << endl;
    
 }
 
 void topEventMinimizer::Initialize_minimizers(ROOT::Math::Minimizer *&outer,
                                               ROOT::Math::Minimizer *&inner)
 {
-    cout << "inside initialize_minimizers" << endl;
+    //cout << "inside initialize_minimizers" << endl;
     //ROOT::Math::Minimizer *blah = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Minimize");
     //cout << "before root" << endl;
     outer = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Minimize");
     //cout << "root" << endl;
-    outer->SetMaxFunctionCalls(1000000);
+    outer->SetMaxFunctionCalls(10000);
     //cout << "max" << endl;
     outer->SetTolerance(0.02);
     //cout << "tolerance" << endl;
@@ -45,7 +45,7 @@ void topEventMinimizer::Initialize_minimizers(ROOT::Math::Minimizer *&outer,
 
     //ROOT::Math::MinimizerOptions inner_opt;
     inner = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
-    inner->SetMaxFunctionCalls(1000000);
+    inner->SetMaxFunctionCalls(10000);
     inner->SetTolerance(0.001);
     inner->SetPrintLevel(0);
 

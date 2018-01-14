@@ -21,15 +21,6 @@ class analyzer2
 
     //void analz(const pvec &, const movec &, ofstream &);
     void smear_only(const pvec &);
-/*    void analz(const pvec &, const movec &, long unsigned int &, fmap2 &, fmap2 &, fmap2 &, fmap2 &, fmap2 &, fmap2 &,
-                fmap2&, fmap2&, fmap2&, ofstream&, ofstream&, ofstream&, ofstream&, ofstream&,
-                fmap2&, fmap2&, fmap2&, ofstream&, ofstream&, ofstream&, ofstream&, ofstream&,
-                fmap2&, fmap2&, fmap2&, ofstream&, ofstream&, ofstream&, ofstream&, ofstream&,
-                ofstream&, ofstream&, ofstream&, ofstream&, ofstream&, ofstream&,
-                ofstream&, ofstream&, ofstream&
-                );*/
-/*    void analz(const pvec &, const movec &, long unsigned int &, fmap4 &, fmap4 &, fmap2 &, fmap2 &, fmap2 &, fmap3 & 
-                );*/
     void analz(const pvec &, const movec &, long unsigned int &, vdmap4 &, vdmap4 &, vimap2 &, vdmap2 &, vdmap2 &, vdmap3 & );
     void input_to_output(const recoc::input &, recoc::output &);
     void calc_diff(const recoc::output &, const recoc::output &, dmap2 &);
@@ -61,13 +52,6 @@ class analyzer2
     recoc::parameters_ttRC params;
     recoc::ttRC reco_C;
 
-    /*dmap2 best_gen;
-    dmap2 smeared_gen;
-    dmap2 best_smeared;
-    dmap2 best;
-    dmap2 smeared;
-    dmap2 gen;*/
-
     dmap3 diff_part_var;
     dmap3 data_part_var;
     imap1 singleint;
@@ -75,24 +59,6 @@ class analyzer2
     dmap1 chisquares;
     dmap2 diff_diffvals;
 
-    /*dmap2 best_gen_all;
-    dmap2 smeared_gen_all;
-    dmap2 best_gen_converged;
-    dmap2 smeared_gen_converged;
-    dmap2 best_gen_failed;
-    dmap2 smeared_gen_failed;*/
-
-/*    vector<string> particles = {"Bottom_1", "Wd11", "Wd12", "W1", "Top_1",
-                                "Bottom_2", "Wd21", "Wd22", "W2", "Top_2",
-                                "b1_from_H", "b2_from_H", "Higgs"};
-    
-    vector<string> variables = {"Pt", "Phi", "Eta", "M"};
-
-    typedef map<string, double> dmap1;
-    typedef map<string, dmap1> dmap2;
-
-    dmap2 best_gen;
-    dmap2 smeared_gen;*/
 
   private:
     void Setup_Maps();
