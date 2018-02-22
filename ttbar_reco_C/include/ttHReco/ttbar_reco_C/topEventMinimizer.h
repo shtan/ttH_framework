@@ -34,12 +34,6 @@ class topEventMinimizer
     //DON'T DELETE THIS
     //bool checkInputSizes();
 
-    // void setBJets();
-    //void setNonTopObjectCollections();
-    // void setWDaughters();
-
-    //  void initializeDeltas();
-    //void initializeChiSquares();
     void Initialize_minimizers(ROOT::Math::Minimizer *&outer,
                                ROOT::Math::Minimizer *&inner);
     void initialize_best_outer_chiSquares();
@@ -53,17 +47,8 @@ class topEventMinimizer
 
   public:
 
-    //commonstruct::big_struct & bigstruct;
-
-
     // flags
     const bool debug = true;
-
-    // status observables
-    //int innerMinStatus;
-    //int outerMinStatus;
-
-    //double outerMin_Edm;
 
     // functions
     topEventMinimizer(commonstruct::big_struct&, int&);

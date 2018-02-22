@@ -78,16 +78,6 @@ inline void smearer::smear_(const resolution &res, const double *p,
     const double py = sin(phi_n) * pT_n;
     const double pz = sinh(eta_n) * pT_n;
 
-    /*cout << "p0, p1, p2, p3" << endl;
-    cout << p[0] << " " << p[1] << " " << p[2] << " " << p[3] << endl;
-    cout << "mass, pt, eta, phi, px, py, pz" << endl;
-    cout << mass << endl;
-    cout << pT << endl;
-    cout << eta << endl;
-    cout << phi << endl;
-    cout << px << endl;
-    cout << py << endl;
-    cout << pz << endl;*/
 
     //op[0] = sqrt(m * m + px * px + py * py + pz * pz);
     op[0] = sqrt(mass * mass + px * px + py * py + pz * pz);
@@ -119,16 +109,6 @@ inline void smearer::smear_givemass_(const resolution &res, const double *p,
     const double py = sin(phi_n) * pT_n;
     const double pz = sinh(eta_n) * pT_n;
 
-    /*cout << "p0, p1, p2, p3" << endl;
-    cout << p[0] << " " << p[1] << " " << p[2] << " " << p[3] << endl;
-    cout << "mass, pt, eta, phi, px, py, pz" << endl;
-    cout << mass << endl;
-    cout << pT << endl;
-    cout << eta << endl;
-    cout << phi << endl;
-    cout << px << endl;
-    cout << py << endl;
-    cout << pz << endl;*/
 
     //op[0] = sqrt(m * m + px * px + py * py + pz * pz);
     op[0] = sqrt(mass * mass + px * px + py * py + pz * pz);

@@ -4,29 +4,6 @@
 namespace recoc
 {
 
-// struct parameters {
-//     bool debug;
-//     diagnostics diag; // if debug = true
-//
-//     parameters_CU pars1;
-//     parameters_KIT pars2;
-//     parameters_RWTH pars3;
-//
-//     parameters() : debug(false);
-// };
-//
-// struct parameters_CU {
-// };
-//
-// struct parameters_KIT {
-// };
-//
-// struct parameters_RWTH {
-// };
-//
-// class diagnostics
-// {
-// };
 
 // polar: pT, phi, eta, E
 template <unsigned int sz> struct input_x {

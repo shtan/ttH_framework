@@ -15,17 +15,6 @@ lightJetChiSquareMinimumSolver::lightJetChiSquareMinimumSolver(
     if (debug_verbosity >= 2)
         cout << "Starting lightJetChiSquareMinimumSolver constructor" << endl;
 
-    //cout <<"bigstruct vector " << bigstruct.nontopsvec.at(0).input.n_objs << endl;
-    //cout << "bigstruct pointer = " << bigstruct.nontops_ptr << endl;
-    //cout <<"address = " << &(bigstruct.nontopsvec.at(0) ) << endl;
-    cout << "top 0 pt = " << bigstruct.tops.at(0)->input.b_pt << endl;
-    cout << "n_objs in bigstruct = " << (bigstruct.nontops_ptr)->input.n_objs << endl;
-    cout << "n_objs in nontops = " << nontops.input.n_objs << endl;
-    cout << "test " << testnontops.calc.jet_px_orig.at(0) << endl;
-    cout << "test " << nontops.calc.jet_px_orig.at(0) << endl;
-    cout << bigstruct.nontops_ptr->calc.jet_px_orig.at(0) << endl;
-    //cout << bigstruct.nontopsvec.at(0).calc.jet_px_orig.at(0) << endl;
-
     Init_data(data_);
 
     inverter3D_ = new TDecompLU(3);
@@ -46,18 +35,10 @@ inline void lightJetChiSquareMinimumSolver::Init_data(recoil_minimizer_data &da)
     da.dxCheck = 0.;
     da.dyCheck = 0.;
     da.dzCheck = 0.;
-    cout<<"hoo"<< endl;
 
-    //nontops.best_innermost_params.jet_dif_px.resize(nontops.input.n_objs, 0.);
-    cout<<"loo"<<endl;
-    //nontops.best_innermost_params.jet_dif_py.resize(nontops.input.n_objs, 0.);
-    //nontops.best_innermost_params.jet_dif_pz.resize(nontops.input.n_objs, 0.);
-    cout << "lah"<< endl;
     da.cov_rad.reserve(nontops.input.n_objs);
-    cout << "blap"<<endl;
     da.cov.reserve(nontops.input.n_objs);
     da.inv_sum_x_cov.reserve(nontops.input.n_objs);
-    cout <<"lah2"<<endl;
     for (int i = 0; i < nontops.input.n_objs; ++i) {
         da.cov_rad.push_back(TMatrixD(3, 3));
         da.cov.push_back(TMatrixD(3, 3));
@@ -74,11 +55,6 @@ lightJetChiSquareMinimumSolver::~lightJetChiSquareMinimumSolver()
 
 void lightJetChiSquareMinimumSolver::setupEquations()
 {
-    //input_.ps = &input_ps;
-    //input_.jetPtWidths = &jetPtWidths;
-    //input_.jetPhiWidths = &jetPhiWidths;
-    //input_.jetEtaWidths = &jetEtaWidths;
-
     checkSize();
     Eval_covariance(data_);
     Eval_cov_sum(data_);
@@ -210,13 +186,6 @@ lightJetChiSquareMinimumSolver::Eval_cov_sum(recoil_minimizer_data &da)
 
 void lightJetChiSquareMinimumSolver::calcMin()
 {
-    // cout << "dx is " << dx_ << endl;
-    // cout << "dy is " << dy_ << endl;
-    // cout << "dz is " << dz_ << endl;
-    // cout << "dxCheck is " << dxCheck_ << endl;
-    // cout << "dyCheck is " << dyCheck_ << endl;
-    // cout << "dzCheck is " << dzCheck_ << endl;
-
     if (do3D_) {
         if (data_.dxCheck == recoil_px(bigstruct) && data_.dyCheck == recoil_py(bigstruct) &&
             data_.dzCheck == recoil_pz(bigstruct))

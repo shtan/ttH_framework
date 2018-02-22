@@ -3,7 +3,6 @@
 
 using namespace commonstruct;
 
-//WDaughterEllipseCalculator::WDaughterEllipseCalculator(top_sys& topsystem) {}
 WDaughterEllipseCalculator::WDaughterEllipseCalculator( top_system& topsystem, int &debug )
     : topsys(topsystem),
       Ab_(4, 4), AWDaughter1_(4, 4), Htilde_(3, 3), H_(3, 3), Hperp_(3, 3),
@@ -19,7 +18,7 @@ WDaughterEllipseCalculator::WDaughterEllipseCalculator( top_system& topsystem, i
 
 WDaughterEllipseCalculator::~WDaughterEllipseCalculator()
 {
-    // cout << "destructor" << endl;
+    
 }
 
 void WDaughterEllipseCalculator::preSetupEllipse()
@@ -42,9 +41,6 @@ void WDaughterEllipseCalculator::setupEllipsePart2()
 double WDaughterEllipseCalculator::getZ2()
 {
     setupEllipsePart2();
-    // cout << "Top mass is " <<topsys.calc.mTop() << endl;
-    // cout << "W mass is " << topsys.calc.mW() << endl;
-    // cout << "second W daughter mass is " << topsys.calc.Wd2_m() << endl;
     return Z2_;
 }
 
@@ -61,15 +57,6 @@ void WDaughterEllipseCalculator::setBJetFactors()
     bJetBeta_ = sqrt(bJetBeta2_);
     bJetGamma2_ = 1.0 / (1.0 - bJetBeta2_);
     bJetGamma_ = sqrt(bJetGamma2_);
-    /*cout << "bP2 bP bE2 bM2 bB2 bB bG2 bG" << endl;
-    cout << bJetP2_ << endl;
-    cout << bJetP_ << endl;
-    cout << bJetE2 << endl;
-    cout << bJetMass2_ << endl;
-    cout << bJetBeta2_ << endl;
-    cout << bJetBeta_ << endl;
-    cout << bJetGamma2_ << endl;
-    cout << bJetGamma_ << endl;*/
 }
 
 void WDaughterEllipseCalculator::setMeasuredWDaughterFactors()
@@ -96,15 +83,6 @@ void WDaughterEllipseCalculator::setMeasuredWDaughterFactors()
                          topsys.calc.Wd1_py() * topsys.calc.Wd1_py()),
                     topsys.calc.Wd1_pz());
 
-   /* cout << "Wd1P2 P E2 M2 B2 B G2 G" << endl;
-    cout << WDaughter1P2_ << endl;
-    cout << WDaughter1P_ << endl;
-    cout << WDaughter1E2 << endl;
-    cout << WDaughter1Mass2_ << endl;
-    cout << WDaughter1Beta2_ << endl;
-    cout << WDaughter1Beta_ << endl;
-    cout << WDaughter1Gamma2_ << endl;
-    cout << WDaughter1Gamma_ << endl;*/
 }
 
 void WDaughterEllipseCalculator::setAngles()
@@ -136,10 +114,6 @@ void WDaughterEllipseCalculator::initializeMatrices()
     WDaughterPerp_.Zero();
     pWDaughter_.Zero();
 
-    // cout << "the b-jet matrix has " << Ab_.GetNrows() << " rows and " <<
-    // Ab_.GetNcols() << " columns"  << endl;
-    // cout << "the measuredWDaughter matrix has " << AWDaughter1_.GetNrows() <<
-    // " rows and " << AWDaughter1_.GetNcols() << " columns"  << endl;
 }
 
 void WDaughterEllipseCalculator::Wsurface()
@@ -151,20 +125,6 @@ void WDaughterEllipseCalculator::Wsurface()
         x0_ / WDaughter1Beta_ - WDaughter1P_ / WDaughter1Beta2_ + WDaughter1P_;
     epsilon2_ = (topsys.calc.mW2() - topsys.calc.Wd2_m2()) -
                 WDaughter1Beta2_ * (topsys.calc.mW2() - topsys.calc.Wd2_m2());
-     //cout << "b-jet energy is " << bJetE_ << endl;
-/*     cout << "b-jet mass^2 is " << bJetMass2_ << endl;
-     cout << "mW^2 is " << topsys.calc.mW2() << endl;
-     cout << "mTop^2 is " << topsys.calc.mTop2() << endl;
-     cout << "x0p is " << x0p_ << endl;
-     cout << "1st W daughter energy is " << topsys.calc.Wd1_e() << endl;
-     cout << "1st W daughter mass^2 is " << WDaughter1Mass2_ << endl;
-     cout << "2nd W daughter mass^2 is " << topsys.calc.Wd2_m2() << endl;
-     cout << "x0 is " << x0_ << endl;
-     cout << "x0p is " << x0p_ << endl;
-     cout << "c is " << c_ << endl;
-     cout << "s is " << s_ << endl;
-     cout << "Sx is " << Sx_ << endl;
-     cout << "epsilon^2 is " << epsilon2_ << endl;*/
 }
 
 void WDaughterEllipseCalculator::bJetEllipsoid()
@@ -191,8 +151,6 @@ void WDaughterEllipseCalculator::bJetEllipsoid()
     Ab_[2][3] = 0;
     Ab_[3][3] = topsys.calc.mW2() - x0p_ * x0p_;
 
-    // cout << "Measured b-jet ellipsoid:" << endl;
-    // Ab_.Print();
 }
 
 void WDaughterEllipseCalculator::measuredWDaughterEllipsoid()
@@ -219,8 +177,6 @@ void WDaughterEllipseCalculator::measuredWDaughterEllipsoid()
     AWDaughter1_[2][3] = 0;
     AWDaughter1_[3][3] = topsys.calc.mW2() - x0_ * x0_ - epsilon2_;
 
-    // cout << "Measured W daughter ellipsoid:" << endl;
-    // AWDaughter1_.Print();
 }
 
 void WDaughterEllipseCalculator::calcZ2()
@@ -239,17 +195,11 @@ void WDaughterEllipseCalculator::calcZ2()
     y1_ = Sy_ - (1. / Omega2) * omega_ * (Sx_ + omega_ * Sy_);
     Z2_ = x1_ * x1_ * Omega2 - (Sy_ - omega_ * Sx_) * (Sy_ - omega_ * Sx_) -
           (topsys.calc.mW2() - x0_ * x0_ - epsilon2_);
-   //  if(Z2_ > 0) cout << "Z^2 is positive: " << Z2_ << endl;
-   //  else if(Z2_ < 0) cout << "Z^2 is negative: " << Z2_ << endl;
-   //  else if(Z2_ == 0) cout << "Z^2 is exactly zero" << endl;
-   //  else cout << "Z^2 is nan" << endl;
-    // if(Z2_<0.) Htilde_.Print();
 }
 
 void WDaughterEllipseCalculator::WDaughterSolution()
 {
     // cout << "calculating second W daughter ellipse" << endl;
-    // cout << "Current top mass is " << topsys.calc.mTop() << endl;
 
     calcZ2();
 
@@ -293,8 +243,6 @@ void WDaughterEllipseCalculator::WDaughterSolution()
     Htilde_[2][1] = Z;
     Htilde_[2][2] = 0;
 
-   // cout << "Htilde: " << endl;
-   //  Htilde_.Print();
 }
 
 TMatrixD WDaughterEllipseCalculator::rotationMatrix(int axis, double angle)
@@ -349,36 +297,23 @@ void WDaughterEllipseCalculator::labSystemTransform()
     TArrayD Harray(9, Hvalues);
     Hperp_.SetMatrixArray(Harray.GetArray());
 
-    //cout << "Hperp is: " << endl;
-    //Hperp_.Print();
 }
 
 void WDaughterEllipseCalculator::calcWDaughterEllipse()
 {
     //cout << "Begin calcWDaughterEllipse" << endl;
     Wsurface();
-    // printFactors();
     measuredWDaughterEllipsoid();
     bJetEllipsoid();
-    // printFactors();
     WDaughterSolution();
     labSystemTransform();
-    // Ab_.Print();
-    // AWDaughter1_.Print();
-    // printFactors();
-    //cout << "End calcWDaughterEllipse" << endl;
 }
 
 void WDaughterEllipseCalculator::calcExtendedWDaughterEllipse()
 {
     //cout << "Begin calcExtendedWDaughterEllipse" << endl;
     // avoid non-invertible matrices
-/*    if (Z2_ <= 0) {
-        // cout << "Z^2 is negative: " << Z2_ << ", cannot calculate extended
-        // representation" << endl;
-        Nperp_.Zero();
-        return;
-    }*/
+
     // cout << "Z^2 is positive: " << Z2_ << ", now calculating extended
     // representation" << endl;
     // cout << "Z^2 = " << Z2_ << endl;
@@ -392,9 +327,6 @@ void WDaughterEllipseCalculator::calcExtendedWDaughterEllipse()
     U[2][2] = -1;
     Nperp_ = TMatrixD(HperpInv_, TMatrixD::kTransposeMult,
                       TMatrixD(U, TMatrixD::kMult, HperpInv_));
-    //cout << "Nperp is: " << endl;
-    //Nperp_.Print();
-    //cout << "End calcExtendedWDaughterEllipse" << endl;
 }
 
 TMatrixD *WDaughterEllipseCalculator::getExtendedWDaughterEllipse()
@@ -409,9 +341,6 @@ TMatrixD *WDaughterEllipseCalculator::getHomogeneousWDaughterEllipse()
 
 void WDaughterEllipseCalculator::getWDaughterMomentum()
 {
-    //cout << "Begin getWDaughterMomentum" << endl;
-    // calcExtendedWDaughterEllipse();
-    // Hperp_.Print();
     double tArray[3] = {cos(topsys.vars.theta), sin(topsys.vars.theta), 1.};
     TVectorD t(3, tArray);
     WDaughterPerp_ = t;
@@ -422,12 +351,6 @@ void WDaughterEllipseCalculator::getWDaughterMomentum()
     topsys.vars.Wd2_px = pWDaughter_[0];
     topsys.vars.Wd2_py = pWDaughter_[1];
     topsys.vars.Wd2_pz = pWDaughter_[2];
-    /*cout << "Theta = " << topsys.vars.theta << endl;
-    cout << "Wd2_px = " << topsys.vars.Wd2_px;
-    cout << "Wd2_py = " << topsys.vars.Wd2_py;
-    cout << "Wd2_pz = " << topsys.vars.Wd2_pz;
-    cout << "End getWDaughterMomentum" << endl;*/
-    //return &pWDaughter_;
 }
 
 

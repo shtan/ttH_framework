@@ -142,44 +142,6 @@ int main(int argc, char* argv[])
         perform_plot(outdir + "/");
     }
     
-/*    //LHEF_lite reader("ttbb_h_bbbbdue.lhe");
-    LHEF_lite reader(input);
-
-    string path_suffix = to_string(neve) + "_" + to_string(max_ev - 1);
-
-    vector<pair<int, double *>> p; // particles
-    vector<pair<int, int>> moth_ID;
-*/
-
-//    initialise_vecs();
-
-//    read_files();
-
-//    plot();
-
-/*    ex1::analyzer2 a;
-   for (unsigned long int0 = 0; int0 < neve; int0++){
-        reader.Get_event_GM(p, moth_ID);
-        a.smear_only(p);
-        cout << "Skipping event " << int0 << endl;
-    }
-
-    //ex1::analyzer2 a;
-    while (reader.Get_event_GM(p, moth_ID) && neve < max_ev) {
-        cout << "ANALYSING EVENT " << neve << endl;
-        //++neve;
-
-        a.analz(p, moth_ID, neve, vec_diff_part_var, vec_data_part_var, vec_singleint,
-                vec_singledouble, vec_chisquares, vec_diff_diffvals);
-*/
-
-//    ++neve;
-//    }
-
-//    write_vecs(path_suffix);
-
-//    for (auto i : p)
-//        delete i.second;
 
     return 0;
 }
@@ -478,15 +440,7 @@ void initialise_hists()
                         rbound = 1;
                     }
                     
-                    //const string hname = fits + "_" + diff + "_" + part + "_" + var;
-                    //Split diff string
-                    /*std::stringstream ss(diff);
-                    std::string token;
-                    std::vector<std::string> cont;
-                    while (std::getline(ss, token, '_')){
-                        cont.push_back(token);
-                    }
-                    const string hname = cont[0] + "-" + cont[1];*/
+ 
                     string hname;
                     if (diff == "best_gen") hname = "fit-gen";
                     else if (diff == "smeared_gen") hname = "smeared-gen";
@@ -548,26 +502,20 @@ void fill_hists()
                 const string part = *p; 
                 for (auto v = variablesH.begin(); v != variablesH.end(); ++v){
                     const string var = *v;
-                    //std::cout << var << std::endl;
                     //Loop over events in vector
                     for (unsigned int nEvent = 0; nEvent < vec_diff_part_var[fits][diff][part]["Pt"].size(); nEvent++){
-                        //std::cout << "In event loop " << nEvent << " " << var << std::endl;
                         //For residual, cylindrical and M
                         if (var == "Pt" || var == "Phi" || var == "Eta" || var == "M") {
-                            //std::cout << "Inside 1st " << var << std::endl;
                             hist_diff_part_var[fits][diff][part][var]->Fill(vec_diff_part_var[fits][diff][part][var].at(nEvent));
                         } else if (var == "Px" or var == "Py" or var == "Pz" or var == "E") {
                             //For residual, Cartesian and E
-                            //std::cout << "Inside 2nd " << diff << " " << var << std::endl;
                             double comparebase = 0;
                             double compare = 0;
                             if (diff == "smeared_gen"){
                                 comparebase = (vec_data_part_varcar[fits]["gen"][part][var]).at(nEvent);
                                 compare = vec_data_part_varcar[fits]["smeared"][part][var].at(nEvent);
                             } else if (diff == "best_gen"){
-                                //std::cout << "before comparebase" << std::endl;
                                 comparebase = vec_data_part_varcar[fits]["gen"][part][var].at(nEvent);
-                                //std::cout << "before compare" << std::endl;
                                 compare = vec_data_part_varcar[fits]["best"][part][var].at(nEvent);
                             } else if (diff == "best_smeared"){
                                 comparebase = vec_data_part_varcar[fits]["smeared"][part][var].at(nEvent);
@@ -616,7 +564,6 @@ void fill_hists()
                             hist_diff_part_var[fits][diff][part][var]->Fill( (compare - comparebase)/comparebase );
                         }
                     }
-                    //std::cout << var << std::endl;
                 }
             }
         }
@@ -832,12 +779,7 @@ void read_files(const string bigpath)
 
 void open_files_new( string path_suffix)
 {
-    //No longer used
-    //string bigpath = path + path_suffix + "/";
     string bigpath = "/afs/cern.ch/work/s/shtan/private/topreco_20161213/20170213/nonexisting_folder/" + path_suffix + "/";
-    //outpath = "/afs/cern.ch/user/s/shtan/teststorage/";
-
-    //fmap outfiles;
 
     cout << file_diff_part_var.max_size() << endl;
     int counter = 0;
@@ -851,16 +793,12 @@ void open_files_new( string path_suffix)
                 for (auto v = variables.begin(); v != variables.end(); ++v){
                     const string var = *v;
                     ofstream* tempfile = new ofstream;
-                    //tempfile.open (
-                    //        (bigpath + diff + "_" + part + "_" + var + "_" + fits + ".txt").c_str() );
 
                     file_diff_part_var[fits][diff][part][var] = tempfile;
                     file_diff_part_var[fits][diff][part][var]->open (
                             (bigpath + diff + "_" + part + "_" + var + "_" + fits + ".txt").c_str() );
-                    //    .open (
-                    //        (bigpath + diff + "_" + part + "_" + var + "_" + fits + ".txt").c_str() );
+
                     *file_diff_part_var[fits][diff][part][var] << "ha" << endl;
-            //cout <<  (outpath + prefix + "_" + part + "_" + var + ".txt").c_str() << endl;
                     cout << "wrote file " << fits << diff << part << var << endl;
                     counter++;
                 }
@@ -1025,25 +963,21 @@ void scatter_plot(vector<double> &vecx, vector<double> &vecy, string filename)
         arry[i] = log10(vecy.at(i)+1e-20);
     }
 
-    cout << "created arrs" << endl;
     TCanvas* canvas = new TCanvas("canvas");
     TGraph *g = new TGraph(n, arrx, arry);
     g->SetMarkerStyle(2);
 
-    cout << "getting axes" << endl;
     g->Draw("ap");
     g->GetXaxis()->SetTitle("Log(outer_edm)");
     g->GetYaxis()->SetTitle("Log(diffchi2_total)");
     //g->GetXaxis()->SetRangeUser(0,1);
     //g->GetYaxis()->SetRangeUser(0,20000);
     g->SetTitle("Converged");
-    cout << "before draw" << endl;
     //g->Draw("ap");
     //canvas->Update();
 
-    cout << "after draw" << endl;
     canvas->Print(filename.c_str());
-    cout << "after print" << endl;
+
 
 }
 
@@ -1064,67 +998,32 @@ void scatter_plot_m(vector<double> &vecx, vector<double> &vecy1, vector<double> 
             cout << abs(vecy1.at(i)) - abs(vecy2.at(i)) << endl;
         } else {
             counter++;
-            //cout << abs(vecy1.at(i)) - abs(vecy2.at(i)) << endl;
         }
-         //   arry[i] = -log10(
-        //arry[i] = log10( vecy1.at(i)+1e-20);
     }
-    cout << "n = " << n << endl;
-    cout << "counter = " << counter << endl;
 
-    cout << "created arrs" << endl;
     TCanvas* canvas = new TCanvas("canvas");
     TGraph *g = new TGraph(n, arrx, arry);
     g->SetMarkerStyle(2);
 
-    cout << "getting axes" << endl;
     g->Draw("ap");
     g->GetXaxis()->SetTitle("Log(outer_edm)");
     g->GetYaxis()->SetTitle("best_gen_diffchi2_total - smeared_gen_diffchi2_total");
     //g->GetXaxis()->SetRangeUser(0,1);
     //g->GetYaxis()->SetRangeUser(0,20000);
     g->SetTitle("Converged");
-    //cout << "before draw" << endl;
     g->Draw("ap");
     canvas->Update();
 
-    cout << "after draw" << endl;
     //canvas->Print(filename.c_str());
     canvas->Print("test.pdf");
-    cout << "after print" << endl;
 
 }
 
 void plot()
 {
 
-    /*for (auto v = (vec_data_part_var["converged"]["gen"]["Wd22"]["Pt"]).begin(); v != (vec_data_part_var["converged"]["gen"]["Wd22"]["Pt"]).end();v++){
-        cout << *v << endl;
-    }*/
-
-
     string plotpath = "./scatterplots/20170220/goodbad/";
     string ypart, yvar;
-/*
-//    for (auto fs = fitstatus.begin(); fs != fitstatus.end(); ++fs){
-//        const string fits = *fs;
-//        for (auto d = datasetdiff.begin(); d != datasetdiff.end(); ++d){
-//            const string diff = *d;
-            for (auto p = particles.begin(); p != particles.end(); ++p){
-                const string part = *p;
-                for (auto v = variables.begin(); v != variables.end(); ++v){
-                    const string var = *v;
-                    plotter::plotter plot;
-                        plot.good_bad(vec_singledouble["converged"]["outer_edm"], 
-                                vec_diff_part_var["converged"]["best_gen"][part][var],
-                                vec_diff_part_var["converged"]["smeared_gen"][part][var],
-                                plotpath + part + "_" + var + ".pdf",
-                                part + "_" + var + ", converged",
-                                "Log10(outer_edm)");
-                }
-            }
-//        }
-//    }*/
 
     plotpath = "./scatterplots/20170221/features_data/";
     ypart = "Top_1";
@@ -1205,13 +1104,7 @@ void moveStatsBox(TH1D *hist)
     cout << "after gpad update" << endl;
     TPaveStats *s = (TPaveStats *)hist->FindObject("stats");
     cout << "1" << endl;
-    /*(    if (s == NULL) {
-            //return;
-            cout <<"null pointer"<<endl;
-            return;
-        }*/
-    // float x1 = s->GetX1NDC();
-    // float x2 = s->GetX2NDC();
+
     float y1 = s->GetY1NDC();
     float y2 = s->GetY2NDC();
     cout << "2" << endl;

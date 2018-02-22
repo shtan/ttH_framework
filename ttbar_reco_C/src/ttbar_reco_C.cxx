@@ -202,11 +202,6 @@ void Print_diff(const input &final, const input &initial)
 
 }
 
-// void Print_diff(const input &in, const output &res)
-// {
-//     
-// }
-
 /*
  * ttRC::reco() block
  *
@@ -290,110 +285,6 @@ inline void Insert_cartesian_XYZT(const double p[4],
     it_LV->SetPxPyPzE(px, py, pz, p[3]);
 }
 
-/*inline void Copy_data_nontop(const input &in, vector<LV> &non_tt,
-                             vector<double> &SDs_pT, vector<double> &SDs_phi,
-                             vector<double> &SDs_eta)
-{
-    {
-        auto it_LV = non_tt.begin();
-        Insert_cartesian_XYZT(in.p.bH1, it_LV);
-        ++it_LV;
-
-        Insert_cartesian_XYZT(in.p.bH2, it_LV);
-        ++it_LV;
-
-        for (auto p : in.p.p_others) {
-            Insert_cartesian_XYZT(p, it_LV);
-            ++it_LV;
-        }
-    }
-
-    {
-        auto it_pT = SDs_pT.begin();
-        auto it_phi = SDs_phi.begin();
-        auto it_eta = SDs_eta.begin();
-
-        *it_pT = in.SD.bH1[0];
-        *it_phi = in.SD.bH1[1];
-        *it_eta = in.SD.bH1[2];
-        ++it_pT;
-        ++it_phi;
-        ++it_eta;
-
-        *it_pT = in.SD.bH2[0];
-        *it_phi = in.SD.bH2[1];
-        *it_eta = in.SD.bH2[2];
-        ++it_pT;
-        ++it_phi;
-        ++it_eta;
-        for (auto SD : in.SD.p_others) {
-            *it_pT = SD[0];
-            *it_phi = SD[1];
-            *it_eta = SD[2];
-            ++it_pT;
-            ++it_phi;
-            ++it_eta;
-        }
-    }
-}*/
-
-// [4]: pT, phi, eta, E
-/*inline void Load_event_data_top(const bool lepton, const double b[4],
-                                const double d1[4], const double d2[4],
-                                const double SD_b[4], const double SD_d1[4],
-                                const double SD_d2[4],
-                                const parameters_ttRC &pa,
-                                topEventMinimizer *ev)
-{
-    const auto &m_t = pa.m_t;
-    const auto &m_W = pa.m_W;
-    const auto &SD_m_t = pa.SD_m_t;
-    const auto &SD_m_W = pa.SD_m_W;
-
-    const auto b1_px = Make_px(b[0], b[1]);
-    const auto b1_py = Make_py(b[0], b[1]);
-    const auto b1_pz = Make_pz(b[0], b[2]);
-    const auto &b1_E = b[3];
-    const auto &b1_SD_pT = SD_b[0];
-    const auto &b1_SD_phi = SD_b[1];
-    const auto &b1_SD_eta = SD_b[2];
-
-    const auto d1_px = Make_px(d1[0], d1[1]);
-    const auto d1_py = Make_py(d1[0], d1[1]);
-    const auto d1_pz = Make_pz(d1[0], d1[2]);
-    const auto &d1_E = d1[3];
-    const auto &d1_SD_pT = SD_d1[0];
-    const auto &d1_SD_phi = SD_d1[1];
-    const auto &d1_SD_eta = SD_d1[2];
-    if (lepton) {
-        ev->addLeptonicTop(b1_px, b1_py, b1_pz, b1_E, b1_SD_pT, b1_SD_eta,
-                           b1_SD_phi, d1_px, d1_py, d1_pz, d1_E, d1_SD_pT,
-                           d1_SD_eta, d1_SD_phi, m_t, SD_m_t, m_W, SD_m_W);
-    } else {
-        const auto d2_px = Make_px(d2[0], d2[1]);
-        const auto d2_py = Make_py(d2[0], d2[1]);
-        const auto d2_pz = Make_pz(d2[0], d2[2]);
-        const auto &d2_E = d2[3];
-        const auto &d2_SD_pT = SD_d2[0];
-        const auto &d2_SD_phi = SD_d2[1];
-        const auto &d2_SD_eta = SD_d2[2];
-
-        ev->addHadronicTop(b1_px, b1_py, b1_pz, b1_E, b1_SD_pT, b1_SD_eta,
-                           b1_SD_phi, d1_px, d1_py, d1_pz, d1_E, d1_SD_pT,
-                           d1_SD_eta, d1_SD_phi, d2_px, d2_py, d2_pz, d2_E,
-                           d2_SD_pT, d2_SD_eta, d2_SD_phi, m_t, SD_m_t, m_W,
-                           SD_m_W);
-    }
-}*/
-
-/*inline void Load_event_data_tt(const input &in, const parameters_ttRC &pa,
-                               topEventMinimizer *ev)
-{
-    Load_event_data_top(in.p.t1_lep, in.p.b1, in.p.d11, in.p.d12, in.SD.b1,
-                        in.SD.d11, in.SD.d12, pa, ev);
-    Load_event_data_top(in.p.t2_lep, in.p.b2, in.p.d21, in.p.d22, in.SD.b2,
-                        in.SD.d21, in.SD.d22, pa, ev);
-}*/
 
 inline void Reset_bigstruct(big_struct &bigstruct)
 {
@@ -414,9 +305,6 @@ inline void Reset_bigstruct(big_struct &bigstruct)
 inline void Fill_bigstruct(const input &in, const parameters_ttRC &pa,
                            big_struct &bigstruct)
 {
-        /*cout << "fill bigstruct" << endl;
-        ROOT::Math::Minimizer *blah = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Minimize");
-        cout << "after blah" << endl;*/
     // Put in parameters and quantities for first top
     if (in.p.t1_lep) {
         bigstruct.tops.push_back( new top_system(
@@ -495,22 +383,6 @@ inline void Fill_bigstruct(const input &in, const parameters_ttRC &pa,
         nontop_phiwidths.push_back(p[1]);
     }
 
-/*    //Put in neutrinos as MET
-    double d12_px = Make_px( in.p.d12[0], in.p.d12[1] );
-    double d12_py = Make_py( in.p.d12[0], in.p.d12[1] );
-    double d22_px = Make_px( in.p.d22[0], in.p.d22[1] );
-    double d22_py = Make_py( in.p.d22[0], in.p.d22[1] );
-    bigstruct.MET_px = 0;
-    bigstruct.MET_py = 0;
-    if (in.p.t1_lep) {
-        bigstruct.MET_px += d12_px;
-        bigstruct.MET_py += d12_py;
-    }
-    if (in.p.t2_lep) {
-        bigstruct.MET_px += d22_px;
-        bigstruct.MET_py += d22_py;
-    }*/
-
     //Put in MET
     bigstruct.MET_px = in.MET_px;
     bigstruct.MET_py = in.MET_py;
@@ -534,11 +406,6 @@ inline void cyl_to_LV(const double (&in)[4], LV &out)
     out.SetPtEtaPhiE( in[0], in[2], in[1], in[3] );
 }
 
-/*inline void input_to_output(const input &in, output &out)
-{
-    out.p = in.p;
-    daughter_to_parents(in.p, out.parents_p);
-}*/
 
 void ttRC::daughter_to_parents(const input_x<4> &daughters, parents<4> &prnts)
 {
@@ -554,12 +421,6 @@ void ttRC::daughter_to_parents(const input_x<4> &daughters, parents<4> &prnts)
     cyl_to_LV(daughters.bH2, bH2);
 
     w1 = d11 + d12;
-/*    cout << "daughter d21 input Pt " << daughters.d21[0] << endl;
-    cout << "daughter d21 Pt " << d21.Pt() << endl;
-    cout <<"daughter w2 Pt " << w2.Pt() << endl;
-    cout << "daughter d21 Px " << d21.Px() << endl;
-    cout << "daughter d22 Px " << d22.Px() << endl;
-    cout <<"daughter w2 Px " << w2.Px() << endl;*/
     t1 = b1 + d11 + d12;
     w2 = d21 + d22;
     t2 = b2 + d21 + d22;
@@ -666,9 +527,6 @@ inline void Get_results(const input &in, big_struct &bigstruct, topEventMinimize
 
     out.chi2s.nontop_objs = ev->get_best_nontop_chi2();
 
-    //out.inner_min_status = ev->bigstruct.innerMinStatus;
-    //out.outer_min_status = ev->bigstruct.outerMinStatus;
-
     out.inner_min_status = ev->get_inner_min_status();
     out.outer_min_status = ev->get_outer_min_status();
     out.inner_edm = ev->get_inner_edm();
@@ -676,67 +534,6 @@ inline void Get_results(const input &in, big_struct &bigstruct, topEventMinimize
 
 }
 
-/*inline void Get_results(const input &in, topEventMinimizer *ev, output &out)
-{
-    out.p.t1_lep = in.p.t1_lep;
-    out.p.t2_lep = in.p.t2_lep;
-    // Minimizer stuff
-    //     ev->getNonTopChiSquare();
-    //     ev->getHadronicChiSquare();
-    //     ev->getTopMassChiSquare();
-    //     ev->getTopChiSquare();
-    //
-    //     ev->getOneTopMassChiSquare(0);
-    //     ev->getOneBChiSquare(0);
-    //     ev->getOneWMassChiSquare(0);
-    //     ev->getOneWDaughter1ChiSquare(0);
-    //
-    //     ev->getOneTopMassChiSquare(1);
-    //     ev->getOneBChiSquare(1);
-    //     ev->getOneWMassChiSquare(1);
-    //     ev->getOneWDaughter1ChiSquare(1);
-
-    out.weight = 1.0 / ev->getChiSquare(); // total
-
-    // top 1
-    {
-        // const auto t1 = ev->getConverter("getTop", 0);
-        const auto b = ev->getConverter("getBJet", 0);
-        // const auto W = ev->getConverter("getW", 0);
-        const auto d1 = ev->getConverter("getWDaughter1", 0);
-        const auto d2 = ev->getConverter("getWDaughter2", 0);
-        LV_to_cyl(b, out.p.b1);
-        LV_to_cyl(d1, out.p.d11);
-        LV_to_cyl(d2, out.p.d12);
-    }
-    // top 2
-    {
-        // const auto t1 = ev->getConverter("getTop", 1);
-        const auto b = ev->getConverter("getBJet", 1);
-        // const auto W = ev->getConverter("getW", 1);
-        const auto d1 = ev->getConverter("getWDaughter1", 1);
-        const auto d2 = ev->getConverter("getWDaughter2", 1);
-        LV_to_cyl(b, out.p.b2);
-        LV_to_cyl(d1, out.p.d21);
-        LV_to_cyl(d2, out.p.d22);
-    }
-
-    const auto bH1 = ev->getConverter("getNonTopObject4", 0);
-    const auto bH2 = ev->getConverter("getNonTopObject4", 1);
-    LV_to_cyl(bH1, out.p.bH1);
-    LV_to_cyl(bH2, out.p.bH2);
-
-    //     const auto sz = in.p.p_others.size();
-    //     if (sz > 0) {
-    //         out.p.p_others.reserve(sz);
-    //         for (unsigned int i = 0; i < sz; ++i) {
-    //             const auto lv = ev->getConverter("getNonTopObject4", 2 + i);
-    //             double *p = new double[4];
-    //             LV_to_cyl(lv, p);
-    //             out.p.p_others.push_back(p);
-    //         }
-    //     }
-}*/
 
 output ttRC::reco(const input &in, const parameters_ttRC &pa)
 {
@@ -759,113 +556,6 @@ output ttRC::reco(const input &in, const parameters_ttRC &pa)
     return res;
 }
 
-/*output ttRC::reco(const input &in, const parameters_ttRC &pa)
-{
-    const auto non_tt_sz = in.p.p_others.size() + 2; // + 2 bH
-    vector<LV> non_tt(non_tt_sz);
-    vector<double> non_tt_SD_pT(non_tt_sz);
-    vector<double> non_tt_SD_phi(non_tt_sz);
-    vector<double> non_tt_SD_eta(non_tt_sz);
-
-    Copy_data_nontop(in, non_tt, non_tt_SD_pT, non_tt_SD_phi, non_tt_SD_eta);
-
-    double p_sum_tt[3];
-    Eval_p_sum_tt_cartesian(in.p, p_sum_tt);
-
-    rc = new topEventMinimizer(
-        non_tt, non_tt_SD_pT, non_tt_SD_eta, non_tt_SD_phi, pa.m_t, pa.SD_m_t,
-        pa.m_W, pa.SD_m_W, p_sum_tt[0], p_sum_tt[1], p_sum_tt[2]);
-
-    Load_event_data_tt(in, pa, rc);
-
-    rc->initializeDeltas();
-    rc->minimizeTotalChiSquare();
-
-    output res;
-    Get_results(in, rc, res);
-    delete rc;
-
-    return res;
-}*/
-
-// void topReconstructionFromLHE::Loop_fill_results_SM(topEventMinimizer &ev,
-//                                                     handleEvent &evh)
-// {
-//     // Minimizer stuff
-//     evh.chiSquareds["nonTop"] = ev.getNonTopChiSquare();
-//     evh.chiSquareds["hadronic"] = ev.getHadronicChiSquare();
-//     evh.chiSquareds["topMass"] = ev.getTopMassChiSquare();
-//     evh.chiSquareds["topSystem"] = ev.getTopChiSquare();
-//     evh.chiSquareds["total"] = ev.getChiSquare();
-//     evh.chiSquareds["qbarFromW"] = ev.getHadronicChiSquare();
-//
-//     evh.chiSquareds["top_topMass"] = ev.getOneTopMassChiSquare(0);
-//     evh.chiSquareds["antiTop_topMass"] = ev.getOneTopMassChiSquare(1);
-//     evh.chiSquareds["bottom"] = ev.getOneBChiSquare(0);
-//     evh.chiSquareds["antiBottom"] = ev.getOneBChiSquare(1);
-//     evh.chiSquareds["Wplus_Wmass"] = ev.getOneWMassChiSquare(0);
-//     evh.chiSquareds["Wminus_Wmass"] = ev.getOneWMassChiSquare(1);
-//
-//     if (evh.leptonFlag == 0) {
-//         evh.chiSquareds["leptonicTopMass"] = ev.getOneTopMassChiSquare(0);
-//         evh.chiSquareds["hadronicTopMass"] = ev.getOneTopMassChiSquare(1);
-//         evh.chiSquareds["leptonicBottom"] = ev.getOneBChiSquare(0);
-//         evh.chiSquareds["hadronicBottom"] = ev.getOneBChiSquare(1);
-//         evh.chiSquareds["leptonicWMass"] = ev.getOneWMassChiSquare(0);
-//         evh.chiSquareds["hadronicWMass"] = ev.getOneWMassChiSquare(1);
-//         evh.chiSquareds["qFromW"] = ev.getOneWDaughter1ChiSquare(1);
-//         evh.chiSquareds["lepton"] = ev.getOneWDaughter1ChiSquare(0);
-//         evh.chiSquareds["lepton_or_antilepton"] =
-//             ev.getOneWDaughter1ChiSquare(0);
-//
-//     } else if (evh.leptonFlag == 1) {
-//         evh.chiSquareds["leptonicTopMass"] = ev.getOneTopMassChiSquare(1);
-//         evh.chiSquareds["hadronicTopMass"] = ev.getOneTopMassChiSquare(0);
-//         evh.chiSquareds["leptonicBottom"] = ev.getOneBChiSquare(1);
-//         evh.chiSquareds["hadronicBottom"] = ev.getOneBChiSquare(0);
-//         evh.chiSquareds["leptonicWMass"] = ev.getOneWMassChiSquare(1);
-//         evh.chiSquareds["hadronicWMass"] = ev.getOneWMassChiSquare(0);
-//         evh.chiSquareds["qFromW"] = ev.getOneWDaughter1ChiSquare(0);
-//         evh.chiSquareds["antiLepton"] = ev.getOneWDaughter1ChiSquare(1);
-//         evh.chiSquareds["lepton_or_antilepton"] =
-//             ev.getOneWDaughter1ChiSquare(1);
-//     }
-//
-//     // for (vector<string>::const_iterator t = chinames.begin(); t <
-//     // chinames.end(); t++){
-//     //    cout<<*t<<" " << *(evh.chiSquareds[*t])<<endl;
-//     //}
-//
-//     *evh.bestParticles["top"] = ev.getConverter("getTop", 0);
-//     *evh.bestParticles["bottom"] = ev.getConverter("getBJet", 0);
-//     *evh.bestParticles["Wplus"] = ev.getConverter("getW", 0);
-//     // FIXME
-//     if (evh.leptonFlag == false) {
-//         *evh.bestParticles["antiLepton"] = ev.getConverter("getWDaughter1",
-//         0);
-//         *evh.bestParticles["neutrino"] = ev.getConverter("getWDaughter2", 0);
-//     } else {
-//         *evh.bestParticles["qFromW"] = ev.getConverter("getWDaughter1", 0);
-//         *evh.bestParticles["qbarFromW"] = ev.getConverter("getWDaughter2",
-//         0);
-//     }
-//     *evh.bestParticles["bFromH"] = ev.getConverter("getNonTopObject4", 0);
-//
-//     *evh.bestParticles["antiTop"] = ev.getConverter("getTop", 1);
-//     *evh.bestParticles["antiBottom"] = ev.getConverter("getBJet", 1);
-//     *evh.bestParticles["Wminus"] = ev.getConverter("getW", 1);
-//     // FIXME
-//     if (evh.leptonFlag == false) {
-//         *evh.bestParticles["qFromW"] = ev.getConverter("getWDaughter1", 1);
-//         *evh.bestParticles["qbarFromW"] = ev.getConverter("getWDaughter2",
-//         1);
-//     } else {
-//         *evh.bestParticles["lepton"] = ev.getConverter("getWDaughter1", 1);
-//         *evh.bestParticles["antiNeutrino"] =
-//             ev.getConverter("getWDaughter2", 1);
-//     }
-//     *evh.bestParticles["bbarFromH"] = ev.getConverter("getNonTopObject4", 1);
-// }
 }
 
 #endif

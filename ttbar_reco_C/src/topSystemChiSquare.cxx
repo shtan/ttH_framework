@@ -12,7 +12,6 @@ topSystemChiSquare::topSystemChiSquare( top_system & topsystem, int &debug )
 {
     //if (debug_verbosity >= 2)
         cout << "starting topSystemChiSquare constructor" << endl;
-    //setupWDaughter2Ellipse();
 }
 
 topSystemChiSquare::~topSystemChiSquare() {}
@@ -59,10 +58,8 @@ void topSystemChiSquare::calc_hperp_nperp()
 
 }
 
-//double topSystemChiSquare::getZ2(double mTop, double mW, double mWDaughter2)
 double topSystemChiSquare::getZ2()
 {
-    //return WDaughter2Calc_.getZ2(mTop, mW, mWDaughter2);
     return WDaughter2Calc_.getZ2();
 }
 
@@ -108,8 +105,6 @@ void topSystemChiSquare::calcTopMassRange()
 
     cout << "Begin calcTopMassRange" << endl;
     // First check whether the calculation has been done
-    //double currentZ2 = getZ2(topsys.input.mTop_central + topsys.input.mTop_width * topsys.vars.delta_mTop,
-    //                         topsys.input.mW_central + topsys.input.mW_width * topsys.vars.delta_mW, topsys.input.Wd2_m);
     double currentZ2 = getZ2();
 
     if (rangeFlag_ && currentZ2 > 0.) {
@@ -409,15 +404,11 @@ void topSystemChiSquare::calcTopMassRange()
             cout << "New deltaMTop is " << topsys.vars.delta_mTop << endl;
             cout << "New top mass is " << topsys.input.mTop_central + topsys.input.mTop_width * topsys.vars.delta_mTop
                  << endl;
-            //setupWDaughter2EllipsePart2();// already called in getZ2()
-            // WDaughter2Calc_.setupEllipse(topsys.input.mTop_central+topsys.input.mTop_width*topsys.vars.delta_mTop,mW,topsys.input.Wd2_m);
             currentZ2 =
                 getZ2();
             cout << "Current Z^2 is " << currentZ2 << endl;
             whilecount++;
         }
-        // WDaughter2Calc_.calcWDaughterEllipse();
-        // WDaughter2Calc_.calcExtendedWDaughterEllipse();
     }
 
     else {
@@ -425,10 +416,6 @@ void topSystemChiSquare::calcTopMassRange()
 
         topsys.vars.delta_mTop = 0.; //added by SM.  SM's note: not sure about this?
         setupWDaughter2EllipsePart2();
-        // WDaughter2Calc_.setupEllipse(topsys.input.mTop_central+topsys.input.mTop_width*topsys.vars.delta_mTop,mW,topsys.input.Wd2_m);
-        // calcWDaughter2Ellipse();
-        // WDaughter2Calc_.calcWDaughterEllipse();
-        // WDaughter2Calc_.calcExtendedWDaughterEllipse();
         cout << "Resetting second W daughter" << endl;
         // if(tempTheta!=0) resetWDaughter2(tempTheta);
 
