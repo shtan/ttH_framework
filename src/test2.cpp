@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <sstream>
+#include <string>
 #include "LHEF_lite.h"
 #include "analyzers_2.h"
 #include "maps.h"
@@ -15,6 +17,7 @@
 #include <TPDF.h>
 #include <TPaveStats.h>
 #include <TFile.h>
+#include <TGaxis.h>
 
 using namespace std;
 //using namespace maps;
@@ -475,7 +478,22 @@ void initialise_hists()
                         rbound = 1;
                     }
                     
-                    const string hname = fits + "_" + diff + "_" + part + "_" + var;
+                    //const string hname = fits + "_" + diff + "_" + part + "_" + var;
+                    //Split diff string
+                    /*std::stringstream ss(diff);
+                    std::string token;
+                    std::vector<std::string> cont;
+                    while (std::getline(ss, token, '_')){
+                        cont.push_back(token);
+                    }
+                    const string hname = cont[0] + "-" + cont[1];*/
+                    string hname;
+                    if (diff == "best_gen") hname = "fit-gen";
+                    else if (diff == "smeared_gen") hname = "smeared-gen";
+                    else if (diff == "smeared_best") hname = "smeared-fit";
+                    else hname = diff;
+                    hname = hname + "_" + part + "_" + var + "_" + fits;
+                    
                     hist_diff_part_var[fits][diff][part][var] = new TH1D(
                             hname.c_str(), hname.c_str(), 100, lbound, rbound);
 
@@ -660,9 +678,18 @@ void plot_hists(const string dir)
                         (var + " Resolution " + unit).c_str());
                 }
                 h_smeared->GetYaxis()->SetTitle("Events");
-                h_smeared->SetTitle((fits + "_" + part + "_" + var).c_str());
+                h_smeared->GetYaxis()->SetTitleOffset(1.4);
+                //h_smeared->GetYaxis()->SetTitleSize(.1);
+                //h_smeared->GetXaxis()->SetTitleFont(12);
+                //h_smeared->SetTitle((fits + "_" + part + "_" + var).c_str());
+                TGaxis *myY = (TGaxis*)h_smeared->GetXaxis();
+                myY->SetMaxDigits(3);
+                h_smeared->GetXaxis()->SetNoExponent(kTRUE);
+                h_smeared->SetTitle((part + " " + var +  " (" + fits + ")").c_str());
                 h_smeared->SetMaximum(
-                    max(h_smeared->GetMaximum(), h_best->GetMaximum()) + 1);
+                    1.05*max(h_smeared->GetMaximum(), h_best->GetMaximum()) );
+                
+                
 
                 canv->cd();
 
@@ -710,6 +737,7 @@ void read_files(const string bigpath)
                     ifstream infile((bigpath + diff + "_" + part + "_" + var + "_" + fits + ".txt").c_str() );
                     //cout << "opening file " << (bigpath + diff + "_" + part + "_" + var + "_" + fits + ".txt").c_str() << endl;
                     while (getline(infile, line)){
+                        //cout << line << endl;
                         vec_diff_part_var[fits][diff][part][var].push_back(atof(line.c_str()));
                     }
                     infile.close();
