@@ -423,17 +423,17 @@ void initialise_hists()
                     //Set upper and lower histogram bounds according to variable
                     //For residual plots
                     if (var == "Pt" || var == "Px" || var == "Py" || var == "Pz") {
-                        lbound = -150;
-                        rbound = 150;
+                        lbound = -80;
+                        rbound = 80;
                     } else if (var == "Eta") {
-                        lbound = -5;
-                        rbound = 5;
+                        lbound = -3;
+                        rbound = 3;
                     } else if (var == "Phi") {
-                        lbound = -5;
-                        rbound = 5;
+                        lbound = -3;
+                        rbound = 3;
                     } else if (var == "M" || var == "E") {
-                        lbound = -150;
-                        rbound = 150;
+                        lbound = -80;
+                        rbound = 80;
                     } else {
                         // If resolution plots, use -1 to 1
                         lbound = -1;
@@ -590,8 +590,8 @@ void plot_hists(const string dir)
     cout << "Drawing histograms..." << endl;
     
     //Line Colours
-    int mc1 = 5;
-    int mc2 = 4;
+    int mc1 = 797;
+    int mc2 = 603;
     
     int iter = 0; //To keep track of first and last plot, when combining into single PDF file
     
@@ -614,6 +614,7 @@ void plot_hists(const string dir)
                 h_smeared->SetFillColor(mc1);
                 h_smeared->SetLineColor(mc1);
                 h_best->SetLineColor(mc2);
+                h_best->SetLineWidth(4);
 
                 if (var == "Pt" or var == "Px" or var == "Py" or
                     var == "Phi" or var == "Pz" or var == "M" or
